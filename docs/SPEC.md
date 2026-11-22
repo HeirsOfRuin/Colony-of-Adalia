@@ -2,8 +2,10 @@
 
 Status: **approved to go to its kill gate, 2026-11-22.** Stage 1 of the
 `game-building` workflow is done; the author answered the open questions (see
-Decisions). Nothing is built and nothing here is measured. Every number is a
-starting guess for the kill gate to test.
+Decisions). The kill gate's first round has been run: `docs/KILLGATE.md` has the
+numbers, and it has not passed (claims 3 and 4 fail). Nothing below this line
+has been changed since the author approved it, except the note under
+"Assumptions and risks" on House of Adalia.
 
 ## Setting
 
@@ -198,6 +200,10 @@ If claim 1 fails, the game is House of Adalia with trees and should stop here.
   Made Post (a crew). The relief ship has to be the centre or this adds nothing.
 - **House of Adalia is not in this checkout.** Whether it exports a code of its
   own, and what its governorship looks like in code, is unread.
+  *Read 2026-11-22 (`docs/KILLGATE.md`, "What was read in House of Adalia"): it
+  exports no dynasty code, only its whole save as `HOA1.`, and it has three
+  household officers but no council and no petitions. The governorship in the
+  table above is to be designed here, not carried over.*
 - **The history is from memory.** Jamestown's supply missions and starving
   winter, the gentlemen who would not work, the dates above: all to be checked
   and sourced before they shape numbers.
