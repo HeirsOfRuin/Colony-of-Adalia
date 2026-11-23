@@ -11,8 +11,8 @@ export const D = {
   start: { lab: 34, craft: 6, sold: 10, gent: 12, fam: 0, food: 150, powder: 22, iron: 10, salt: 8, goods: 14, morale: 60, favour: 55 },
 
   // work, per hand set to the job for a summer
-  foodPerHand: 2.8,          // times fieldMult, weather, tools
-  fieldMult: (lvl) => 1 + 0.11 * lvl,       // fields 0..10. At 0, three hands in four on food grow 1.5 rations a head; the year needs 2
+  foodPerHand: 3.4,          // times fieldMult, weather, tools
+  fieldMult: (lvl) => 1 + 0.09 * lvl,       // fields 0..10. At 0 the year's food takes two hands in three; at 10, one in three
   fieldCost: (lvl) => 8 + 3 * lvl,          // build points for the next level
   storeCost: 22, storeMax: 3,
   millCost: 170, millCraft: 6, millKegs: 5,  // the powder mill: late, dear, and it ends the clock
@@ -34,12 +34,12 @@ export const D = {
     company: { late: 0.16, short: 0.12, lost: 0.07 },
     crown:   { late: 0.34, short: 0.10, lost: 0.07 },
   },
-  budget: { company: (f) => 30 + 0.55 * f, crown: (f) => 36 + 0.22 * f },
+  budget: { company: (f) => 22 + 0.4 * f, crown: (f) => 24 + 0.16 * f },
   sails:  { company: (f) => Math.min(0.97, 0.55 + 0.0045 * f), crown: (f) => 0.72 + 0.002 * f },
-  pushSettlers: { company: (year) => (year >= 4 ? 5 + 0.6 * year : 0), crown: () => 0 },   // labourers sent unasked: the later waves
+  pushSettlers: { company: (year) => (year >= 4 ? 3 + 0.3 * year : 0), crown: () => 0 },   // labourers sent unasked: the later waves
   price: {
-    company: { powder: 2.0, iron: 1.0, salt: 0.5, goods: 0.6, food: 0.2, lab: 1.0, craft: 2.2, sold: 3.0, fam: 1.5 },
-    crown:   { powder: 1.1, iron: 1.0, salt: 0.5, goods: 0.9, food: 0.2, lab: 1.7, craft: 2.6, sold: 1.3, fam: 2.2 },
+    company: { spec: 4, powder: 2.0, iron: 1.0, salt: 0.5, goods: 0.6, food: 0.2, lab: 1.0, craft: 2.2, sold: 3.0, fam: 1.5 },
+    crown:   { spec: 4, powder: 1.1, iron: 1.0, salt: 0.5, goods: 0.9, food: 0.2, lab: 1.7, craft: 2.6, sold: 1.3, fam: 2.2 },
   },
   standard: {                // what the backers load when no letter reached them (shares of the budget)
     company: { lab: 0.45, goods: 0.15, food: 0.15, powder: 0.10, iron: 0.08, salt: 0.07 },
@@ -51,14 +51,14 @@ export const D = {
   graveyard: 3, graveyardMax: 0.8,   // settlers who will not sail: share lost per share of the colony that died last year
 
   // the backers
-  companyWants: (year, pop) => 0.30 * pop * (1 + 0.04 * year) * Math.min(1, (year + 1) / 4),   // cargo a year; the first years are forgiven
-  companySwing: 16, companyNoShip: -4, crownCargoWeight: 0.3, courtSd: 5, courtDrift: -0.5, flagBonus: 3,
+  companyWants: (year, pop) => 0.50 * pop * (1 + 0.04 * year) * Math.min(1, (year + 1) / 4),   // cargo a year; the first years are forgiven
+  companySwing: 16, companyNoShip: -4, crownCargoWeight: 0.3, courtSd: 5, courtDrift: -2, flagBonus: 3,
   recallBelow: 12, recallStrikes: 2,
 
   // the nations
   nations: [
-    { id: 'near', pop: 320, base: [-45, 35], corn: 1.18 },
-    { id: 'far',  pop: 220, base: [-45, 35], corn: 1.12 },
+    { id: 'near', pop: 560, base: [-45, 35], corn: 1.18 },
+    { id: 'far',  pop: 400, base: [-45, 35], corn: 1.12 },
   ],
   warriorShare: 0.25, tradeTie: 3, tradeAbove: -10, giftTie: 6, giftCost: 5, furPerGood: 1.5,
   cornPrice: 0.8, cornSold: 0.25, powderTie: 3, powderFood: 8, rivalSpite: 2,
@@ -66,9 +66,28 @@ export const D = {
   grudgeDecay: 0.01, drift: 0.12,
   landFree: 70, landPerDeal: 16, landCost: 9, landPressure: 0.2,
   warBelow: -30, attackBase: 0.10, attackSlope: 0.01, attackMax: 0.6,
-  wallDef: 4, armedDef: 1.2, unarmedDef: 0.15, settlerArms: 0.15, kegsPerAttack: 1 / 12, gunEdge: 1 / 40,
+  wallDef: 3, armedDef: 1.2, unarmedDef: 0.15, settlerArms: 0.1, kegsPerAttack: 1 / 12, gunEdge: 1 / 40,
   commit: [0.6, 1.2],        // how much of its strength a nation sends: more as the tie worsens
   breachPop: 0.35, breachFood: 0.3, allyAbove: 50, allyHelp: 0.3, allyCorn: 0.2,
+
+  // politics between the two nations (round 2). The feud is theirs; the colony chooses a side or none.
+  feud: [10, 90], feudSd: 7, fightAbove: 55, fightChance: 0.5, fightLoss: 0.04,
+  sideCost: 1.0,             // tie lost with one nation per point gained with the other, at a feud of 100
+  friendshipPrice: 1 / 40,   // goods a head a year below which a trading season wins no tie: a rich colony gives more
+  pactAbove: 30, pactBreaks: 5, pactHelp: 0.5, allyMarch: 0.5, pactCorn: 0.6, pactTarget: 1.5, busyDiv: 140,
+  callKegs: 3, callRivalTie: -20, callRivalGrudge: 8, callTie: 6, callPlunder: 30, refuseCall: -20, raidRivalTie: 8,
+  hegemon: 1.6, tribute: 4, tributeRefused: -8,
+
+  // the watch and the field (round 2): the sixth job, and the one military action the governor starts
+  watchCover: 0.08,          // hands under arms a head that keep the field hands safe
+  drillRate: 1.6, drillDecay: 0.1, drillArms: 0.3,
+  expeditionKegs: 5, homeEdge: 0.35,   // an expedition falls on one town, not on the nation: a third of its strength, at home
+  carried: 1.1, standOff: 0.8, carriedPop: 0.06, carriedCorn: 30, carriedGrudge: 12, routShare: 0.2,
+  expeditionFavour: { company: -3, crown: 3 },
+
+  // the named few (round 2): one person in each place, and what the colony loses with them
+  roles: { surgeon: 0.75, smith: 0.7, carpenter: 1.25, captain: 1.15, interpreter: 1, minister: 2, husbandman: 1.1, factor: 1.15 },
+  namedRisk: 1.0, namedMorale: 3, specPrice: 4, specFound: 0.5,
 
   // sickness, both ways
   shipFever: 0.30, shipFeverDeath: [0.03, 0.08], crossOver: 0.5, crossOverNoContact: 0.2,
@@ -83,5 +102,5 @@ export const D = {
   // the governor
   hazard: (t) => 0.002 + 0.0005 * t, hazardHunger: 0.012, healthCut: 0.5,
   deputyStep: 0.07, deputyDies: 0.02, deputyHeir: 0.35,
-  successionFavour: 15, successionMorale: 10,
+  successionFavour: 15, successionMorale: 10, successorBest: 0.8,   // the best-trained deputy still decides as the governor would only four turns in five
 };

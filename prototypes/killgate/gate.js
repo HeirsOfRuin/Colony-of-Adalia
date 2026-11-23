@@ -51,9 +51,10 @@ for (const [k, r] of Object.entries(hunts)) console.log(`${('hunt ' + k).padEnd(
 console.log(`  best on seed (worth): ${bestOn(hunts, worth)}`);
 
 console.log('\nCLAIM 3  The neighbours are not a hazard table');
-const nb = { trade: real, raid: arm('raid', { policy: C({ neighbours: 'raid', share: false }) }), ignore: arm('ignore', { policy: C({ neighbours: 'ignore', share: false }) }), sell: arm('sell powder', { policy: C({ sellPowder: true }) }) };
-for (const [k, r] of Object.entries(nb)) console.log(`${k.padEnd(22)} | ten yrs ${pct(r.filter(ten).length, runs).padStart(9)} | win ${pct(r.filter(won).length, runs).padStart(9)} | pop@10 ${mean(r.filter(ten).map((s) => s.stats.at20.pop)).toFixed(0).padStart(4)} | worst tie@10 ${mean(r.filter(ten).map((s) => Math.min(...s.stats.at20.rel))).toFixed(0).padStart(4)} | attacks ${mean(r.map((s) => s.stats.attacks)).toFixed(1)} | breaches ${mean(r.map((s) => s.stats.breaches)).toFixed(2)} | starved ${mean(r.map((s) => s.stats.starved)).toFixed(0)} | ${why(r)}`);
+const nb = { 'trade with both': real, 'take a side': arm('partisan', { policy: C({ neighbours: 'partisan' }) }), 'side, raid the rival': arm('partisan raid', { policy: C({ neighbours: 'partisan', raidRival: true }) }), 'keep apart': arm('isolate', { policy: C({ neighbours: 'isolate', share: false }) }), 'raid when hungry': arm('raid', { policy: C({ neighbours: 'raid', share: false }) }), 'trade, sell powder': arm('sell powder', { policy: C({ sellPowder: true }) }) };
+for (const [k, r] of Object.entries(nb)) console.log(`${k.padEnd(22)} | ten yrs ${pct(r.filter(ten).length, runs).padStart(9)} | win ${pct(r.filter(won).length, runs).padStart(9)} | pop@10 ${mean(r.filter(ten).map((s) => s.stats.at20.pop)).toFixed(0).padStart(4)} | worst tie@10 ${mean(r.filter(ten).map((s) => Math.min(...s.stats.at20.rel))).toFixed(0).padStart(4)} | attacks ${mean(r.map((s) => s.stats.attacks)).toFixed(1)} | breaches ${mean(r.map((s) => s.stats.breaches)).toFixed(2)} | pact years ${mean(r.map((s) => s.stats.pactYears)).toFixed(1)} | calls ${mean(r.map((s) => s.stats.calls)).toFixed(1)} | ${why(r)}`);
 console.log(`  best on seed (worth): ${bestOn(nb, worth)}`);
+for (const [name, f] of [['feud cold at landing (under 40)', (s) => s.feud0 < 40], ['feud hot at landing (over 60)', (s) => s.feud0 > 60]]) { const idx = seeds.map((_, i) => i).filter((i) => f(real[i])); console.log(`  ${name}, ${idx.length} seeds, win: ${Object.entries(nb).map(([k, r]) => `${k} ${pct(idx.filter((i) => won(r[i])).length, idx.length)}`).join(' | ')}`); }
 console.log(`  best on seed at year ten (pop): ${bestOn(nb, (s) => (ten(s) ? s.stats.at20.pop : 0))}`);
 
 console.log('\nCLAIM 4  No best job');
@@ -61,6 +62,21 @@ const sp = { adaptive: real }; for (const k of Object.keys(SPLITS)) sp[k] = arm(
 for (const [k, r] of Object.entries(sp)) row('split ' + k, r);
 console.log(`  best on seed (worth), fixed splits only: ${bestOn(Object.fromEntries(Object.entries(sp).filter(([k]) => k !== 'adaptive')), worth)}`);
 console.log(`  best on seed (worth), all six: ${bestOn(sp, worth)}`);
+
+console.log('\nWAR  The watch, the expedition, and what an ally costs');
+const war = { careful: real, 'marches on a hostile neighbour': arm('expedition', { policy: C({ expedition: true }) }), 'no watch kept': arm('no watch', { policy: C({ noWatch: true }) }), 'side, marches with the ally': arm('partisan march', { policy: C({ neighbours: 'partisan', expedition: true }) }), 'side, refuses the call': arm('refuse call', { policy: C({ neighbours: 'partisan', answerCall: false }) }), 'side, answers': nb['take a side'] };
+for (const [k, r] of Object.entries(war)) console.log(`${k.padEnd(30)} | ten yrs ${pct(r.filter(ten).length, runs).padStart(9)} | win ${pct(r.filter(won).length, runs).padStart(9)} | attacks ${mean(r.map((s) => s.stats.attacks)).toFixed(1)} | breaches ${mean(r.map((s) => s.stats.breaches)).toFixed(2)} | killed ${mean(r.map((s) => s.stats.killed)).toFixed(1)} | expeditions ${mean(r.map((s) => s.stats.expeditions)).toFixed(2)} (carried ${mean(r.map((s) => s.stats.carried)).toFixed(2)}, routed ${mean(r.map((s) => s.stats.routs)).toFixed(2)}) | calls ${mean(r.map((s) => s.stats.calls)).toFixed(1)} | ${why(r)}`);
+console.log(`  win gap, marches minus careful: ${gap(real.map(won), war['marches on a hostile neighbour'].map(won))} pts; no watch minus careful: ${gap(real.map(won), war['no watch kept'].map(won))}; answers minus refuses: ${gap(war['side, refuses the call'].map(won), war['side, answers'].map(won))}; side and march minus side: ${gap(war['side, answers'].map(won), war['side, marches with the ally'].map(won))}`);
+
+console.log('\nNAMES  The named few, and what hunger costs');
+const noNames = arm('no names', { policy: careful, noNames: true });
+for (const [k, r] of [['careful, eight named', real], ['careful, nobody named', noNames], ['plough, eight named', sp.plough]]) console.log(`${k.padEnd(24)} | win ${pct(r.filter(won).length, runs).padStart(9)} | starved ${mean(r.map((s) => s.stats.starved)).toFixed(0)} | named dead ${mean(r.map((s) => s.stats.namedDead)).toFixed(1)} | sent out to replace ${mean(r.map((s) => s.stats.namedSent)).toFixed(1)} | places filled at the end ${mean(r.map((s) => Object.values(s.named).filter(Boolean).length)).toFixed(1)} of 8`);
+console.log(`  win gap, named minus not: ${gap(noNames.map(won), real.map(won))} pts`);
+const safe = arm('named safe', { policy: careful, namedSafe: true });
+console.log(`careful, the named cannot die | win ${pct(safe.filter(won).length, runs)}; win gap, safe minus mortal: ${gap(real.map(won), safe.map(won))} pts`);
+
+console.log('\nSTART  The near nation\'s temper on landing (careful)');
+for (const [name, f] of [['below -15', (s) => s.base0 < -15], ['-15 to 10', (s) => s.base0 >= -15 && s.base0 <= 10], ['above 10', (s) => s.base0 > 10]]) { const idx = seeds.map((_, i) => i).filter((i) => f(real[i])); console.log(`${name.padEnd(10)} | ${String(idx.length).padStart(4)} seeds | ${Object.entries({ 'trade with both': real, 'take a side': nb['take a side'], 'side and march': war['side, marches with the ally'], 'keep apart': nb['keep apart'] }).map(([k, r]) => `${k} ${pct(idx.filter((i) => won(r[i])).length, idx.length)}`).join(' | ')}`); }
 
 console.log('\nCLAIM 5  The middle is not dead (proxy: turns with something pressing; see KILLGATE.md)');
 for (const [name, lo, hi] of [['years 0-10', 0, 20], ['years 10-20', 20, 40], ['years 20-30', 40, 60]]) {

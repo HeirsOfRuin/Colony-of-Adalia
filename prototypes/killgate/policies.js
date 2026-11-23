@@ -15,8 +15,9 @@ function letter(v, mode) {
   L.iron = gap(v.iron, 3, Math.max(2, use.iron));
   L.salt = gap(v.salt, 2, Math.max(2, use.salt));
   L.goods = gap(v.goods, 6, Math.max(4, use.goods));
+  L.spec = mode === 'ahead' ? v.emptyPlaces * 2 : 0;   // two asked for each empty place: one in two is found
   L.food = mode === 'ahead' ? Math.max(0, v.pop * 2 * (v.fields < 5 ? 0.35 : 0.1)) : Math.max(0, v.pop * 1.2 - v.food);
-  let left = v.budget - ['powder', 'iron', 'salt', 'goods', 'food'].reduce((q, k) => q + L[k] * v.price[k], 0);
+  let left = v.budget - ['powder', 'iron', 'salt', 'goods', 'food', 'spec'].reduce((q, k) => q + L[k] * v.price[k], 0);
   if (left > 0) {
     const war = v.nations.some((n) => n.rel < -15);
     L.craft = v.craft < 9 ? Math.min(4, left * 0.25 / v.price.craft) : 0; left -= L.craft * v.price.craft;
@@ -29,11 +30,12 @@ function letter(v, mode) {
 
 // ---- the hands ------------------------------------------------------------------------------
 export const SPLITS = {
-  even:   { food: 0.2, walls: 0.2, cargo: 0.2, build: 0.2, range: 0.2 },
-  plough: { food: 0.6, walls: 0.1, cargo: 0.15, build: 0.1, range: 0.05 },
-  wall:   { food: 0.35, walls: 0.35, cargo: 0.15, build: 0.1, range: 0.05 },
-  cargo:  { food: 0.35, walls: 0.1, cargo: 0.4, build: 0.1, range: 0.05 },
-  build:  { food: 0.35, walls: 0.1, cargo: 0.15, build: 0.35, range: 0.05 },
+  even:   { food: 1 / 6, walls: 1 / 6, cargo: 1 / 6, build: 1 / 6, range: 1 / 6, watch: 1 / 6 },
+  plough: { food: 0.6, walls: 0.08, cargo: 0.15, build: 0.1, range: 0.04, watch: 0.03 },
+  wall:   { food: 0.35, walls: 0.33, cargo: 0.15, build: 0.1, range: 0.04, watch: 0.03 },
+  arms:   { food: 0.35, walls: 0.12, cargo: 0.15, build: 0.1, range: 0.04, watch: 0.24 },
+  cargo:  { food: 0.35, walls: 0.08, cargo: 0.4, build: 0.1, range: 0.04, watch: 0.03 },
+  build:  { food: 0.35, walls: 0.08, cargo: 0.15, build: 0.35, range: 0.04, watch: 0.03 },
 };
 function adaptive(v, o) {
   // feed the year first, then guard against the worst neighbour, then pay the backers, then build
@@ -42,35 +44,43 @@ function adaptive(v, o) {
   // 74% of its hands on food set 55% and starved; a fixed 60% beat it on 61% of seeds.)
   let left = 1; const take = (x) => { const y = Math.max(0, Math.min(left, x)); left -= y; return y; };
   const need = Math.max(0, v.pop * 2 * 1.15 - Math.max(0, v.food - v.pop));   // the summer is eaten before the harvest
-  const food = take(Math.min(0.85, need / Math.max(1, v.hands * v.foodPerHand * (v.hostile ? 0.75 : 1))));
+  // men under arms first where a neighbour is hostile: without them the field hands lose a quarter of the summer
+  const watch = take(o.noWatch ? 0 : v.hostile ? v.watchNeed : o.neighbours === 'isolate' ? 0.06 : 0.02);
+  const food = take(Math.min(0.85, need / Math.max(1, v.hands * v.foodPerHand)));
   // walls to stand off the worst neighbour as he is today, with a third to spare; cargo
   // jumps the queue when the backers are losing patience
   const flagShort = v.charter === 'crown' && v.walls < v.flagWalls + 0.5;
   const wallShare = () => take(v.defence < v.threat * 1.3 ? 0.22 : flagShort ? 0.18 : v.walls < 1.5 ? 0.08 : 0.04);
   const cargoFirst = v.charter === 'company' && v.favour < 50;
   let walls = cargoFirst ? 0 : wallShare();
-  const cargoNeed = Math.max(0, (v.wants - v.cargo) * (v.charter === 'crown' ? 0.6 : 1.15)) / (v.hostile ? 0.75 : 1);
-  const cargo = take(Math.min(0.5, cargoNeed / Math.max(1, v.hands * (1 + v.range))));
+  const cargoNeed = Math.max(0, (v.wants - v.cargo) * (v.charter === 'crown' ? 0.6 : 1.15));
+  const cargo = take(Math.min(0.5, cargoNeed / Math.max(1, v.hands * v.cargoPerHand)));
   if (cargoFirst) walls = wallShare();
   const range = take(v.range < 1 ? Math.min(0.08, left * 0.4) : 0);
-  return { food, walls, cargo, build: left, range };
+  return { food, walls, cargo, build: left, range, watch };
 }
 
 export function policy(o = {}) {
-  o = { order: 'ahead', neighbours: 'trade', split: 'adaptive', hunt: 'need', share: true, deputy: true, ration: 'adaptive', sellPowder: false, ...o };
+  o = { order: 'ahead', neighbours: 'trade', split: 'adaptive', hunt: 'need', share: true, deputy: true, ration: 'adaptive', sellPowder: false, expedition: false, raidRival: false, ...o };
   return {
     opts: o,
     summer(v) {
       const stance = {}, sell = {};
+      // the partisan picks the nation that likes him better and stands by it; its rival he leaves, or raids when hungry
+      const friend = v.pact || [...v.nations].sort((a, b) => b.rel - a.rel)[0].id;
       for (const n of v.nations) {
-        if (o.neighbours === 'trade') { stance[n.id] = v.goods >= 2 ? 'trade' : 'ignore'; if (o.sellPowder && v.food < v.pop * 1.2 && v.powder > 8) sell[n.id] = 3; }
+        if (o.neighbours === 'partisan') stance[n.id] = n.id === friend ? (v.goods >= 2 ? 'ally' : 'ignore') : o.raidRival && v.food < v.pop * 1.6 && v.powder >= 6 && n.corn > 40 && n.rel < 0 ? 'raid' : 'ignore';
+        else if (o.neighbours === 'trade') { stance[n.id] = v.goods >= 2 ? 'trade' : 'ignore'; if (o.sellPowder && v.food < v.pop * 1.2 && v.powder > 8) sell[n.id] = 3; }
         else if (o.neighbours === 'raid') stance[n.id] = v.food < v.pop * 1.6 && v.powder >= 3 && n.corn > 40 ? 'raid' : 'ignore';
         else stance[n.id] = 'ignore';
       }
       const build = v.fields < 6 ? 'fields' : v.store < 2 ? 'store' : !v.mill && v.craft >= 6 ? 'mill' : 'fields';
       return {
         split: o.split === 'adaptive' ? adaptive(v, o) : SPLITS[o.split], stance, sellPowder: sell, share: o.share,
-        tradeGoods: Math.min(6, v.goods * 0.35), buyLand: o.neighbours === 'trade', build, press: v.food < v.pop * 0.8,
+        tradeGoods: Math.min(v.goods * 0.5, Math.max(4, v.friendshipPrice * (o.neighbours === 'partisan' ? 1 : 0.5))), buyLand: o.neighbours === 'trade' || o.neighbours === 'partisan', build, press: v.food < v.pop * 0.8,
+        answerCall: o.answerCall !== false, payTribute: o.payTribute !== false,
+        // march only on a neighbour already at war with us, and only with a quarter more than his town can put up
+        expedition: o.expedition ? v.nations.find((n) => n.rel < -30 && v.force + n.allyMarch > n.home * 1.25 && v.powder >= 10)?.id : undefined,
         letter: letter(v, o.order),
       };
     },
@@ -79,7 +89,7 @@ export function policy(o = {}) {
       const hunt = o.hunt === 'always' ? 99 : o.hunt === 'early' ? (v.year < 6 ? 99 : short ? Math.max(0, v.powder - P(v) * 0.6) : 0)
         : o.hunt === 'never' ? 0 : short ? Math.max(0, Math.min((v.pop - v.food) / 7, v.powder - P(v) * 0.5)) : 0;
       return {
-        hunt, buyCorn: o.neighbours === 'trade' && v.food < v.pop * 1.3 ? v.pop * 1.3 - v.food : 0,
+        hunt, buyCorn: (o.neighbours === 'trade' || o.neighbours === 'partisan') && v.food < v.pop * 1.3 ? v.pop * 1.3 - v.food : 0,
         ration: o.ration === 'full' ? 'full' : v.food < v.pop * 0.85 ? 'short' : 'full',
         attend: v.morale < 42 ? 'colony' : o.deputy && v.year >= 6 && v.deputy < 1 ? 'deputy' : v.year >= 18 ? 'health' : 'colony',
       };

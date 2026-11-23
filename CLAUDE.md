@@ -6,6 +6,9 @@
 - Built with the HeirsOfRuin game-building skills (`Game-Workshop/skills/`).
   Read `game-building/SKILL.md` before writing game logic. Follow its stages
   and gates; skipping a stage is allowed, skipping it silently is not.
+- `docs/FRAME-war.md` is the outline of war beside trade and diplomacy. It is
+  not approved. The nations' feud and the sixth job (the watch) are proposals
+  in it; do not write either into content until the author has answered it.
 - The stage this repo is at is written at the top of `docs/KILLGATE.md`. No
   screen is drawn and no scene is written until the author has read the kill
   gate and `docs/DESIGN.md` is approved.

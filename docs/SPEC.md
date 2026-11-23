@@ -2,8 +2,9 @@
 
 Status: **approved to go to its kill gate, 2026-11-22.** Stage 1 of the
 `game-building` workflow is done; the author answered the open questions (see
-Decisions). The kill gate's first round has been run: `docs/KILLGATE.md` has the
-numbers, and it has not passed (claims 3 and 4 fail). Nothing below this line
+Decisions). The kill gate has had two rounds: `docs/KILLGATE.md` has the
+numbers. After round 2 no claim plainly fails; claims 3 and 4 are improved and
+not yet clean. Nothing below this line
 has been changed since the author approved it, except the note under
 "Assumptions and risks" on House of Adalia.
 
@@ -243,6 +244,7 @@ This page is the whole brief; the chat it came from is gone. In order:
 
 | Date | Decision |
 |---|---|
+| 2026-11-23 | **Round 2 of the kill gate, and war.** Shown round 1 and four questions, with the recommendation to answer the neighbours (politics between the nations) and hunger (a small named cast) first. The author: "Go with recommendations, also outline how military actions and play out will work along the other systems of trade and diplomacy". Read here as: build both into the gate now; the late ship and the hostile start stay open. Done in `docs/KILLGATE.md` round 2 and `docs/FRAME-war.md`. The nations' feud and the sixth job (the watch) are proposals in that frame, not yet approved. |
 | 2026-11-22 | **One life.** The author: "Colony is one person's life. You create your character at the start of the game, with heavily influenced added bonuses coming from your previous games saves or from the quick decision backgrounds you choose." |
 | 2026-11-22 | **The win.** The author: "Winning is seeing the colony surpass your own life." Read here as: the colony stands ten years after the governor's death. The ten is a guess. |
 | 2026-11-22 | **The premise.** The author: "I want to take the governorship of HoA, and bring it to the untamed wild, where you must manage your followers, your life, and pray the next wave of settlers arrives before the black powder runs out." |
