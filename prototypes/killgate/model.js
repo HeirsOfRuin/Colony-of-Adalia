@@ -1,6 +1,7 @@
 // The kill-gate model: one governor's colony as numbers. No UI, no prose, no names of
 // peoples or places. Round 2 (docs/KILLGATE.md) added the nations' feud, pacts, the watch,
-// the expedition and eight named places (docs/FRAME-war.md is the design of the war side).
+// the expedition and eight named places; round 3 made it four nations with a feud for each
+// pair, parley, and a reckoning of a town that can be wrong (docs/FRAME-war.md is the design).
 // Deterministic: every draw comes from a stream named by (seed, turn, system), so two
 // policies on one seed meet the same weather, the same ship fates and the same court.
 //   play(seed, { policy, charter, onTime, ... }) -> final state
@@ -17,7 +18,12 @@ const role = (s, k) => (s.named[k] ? D.roles[k] : 1);
 export const popOf = (s) => s.lab + s.craft + s.sold + s.gent + s.fam;
 export const handsOf = (s, press) => s.lab + s.craft + 0.5 * s.sold + (press ? 0.6 * s.gent : 0) + 0.4 * s.fam;
 export const yearOf = (s) => Math.floor(s.t / 2);
-export const hostile = (s) => s.nations.some((n) => n.rel < D.warBelow);
+export const hostile = (s) => s.nations.some((n) => n.rel < D.warBelow && !(n.truce > 0));
+const pairKey = (a, b) => (a.id < b.id ? `${a.id}|${b.id}` : `${b.id}|${a.id}`);
+/** how hot the feud between two nations is, 0..100 */
+export const feudOf = (s, a, b) => (a === b ? 0 : s.feuds[pairKey(a, b)]);
+const hottest = (s, n) => Math.max(...s.nations.filter((o) => o !== n).map((o) => feudOf(s, n, o)));
+const byId = (s, id) => s.nations.find((n) => n.id === id);
 
 export function newColony(seed, opt = {}) {
   const r = streamFor(seed, 0, 'world');
@@ -25,16 +31,17 @@ export function newColony(seed, opt = {}) {
     seed, t: 0, charter: opt.charter || 'company', onTime: !!opt.onTime,
     ...D.start, cargo: 0, walls: 0, fields: 0, store: 0, mill: false, millWork: 0, buildWork: 0, range: 0, born: 0,
     landFree: D.landFree, strikes: 0, diedNow: 0, diedYear: 0, loseN: 0,
-    feud: 0, feud0: 0, base0: 0, pact: null, drill: 0, cover: 0,
+    feuds: {}, feudNear0: 0, hostileNear0: 0, pact: null, drill: 0, cover: 0,
     named: Object.fromEntries(ROLES.map((k) => [k, !opt.noNames])), noNames: !!opt.noNames, namedSafe: !!opt.namedSafe,
-    nations: D.nations.map((n) => ({ id: n.id, pop: n.pop, corn: n.pop * 0.6, rel: 0, base: r.range(n.base[0], n.base[1]), grudge: 0, guns: 0, cornK: n.corn, fever: 0, contact: false })),
+    nations: D.nations.map((n) => ({ id: n.id, near: n.near, truce: 0, beaten: 0, pop0: n.pop, pop: n.pop, corn: n.pop * 0.6, rel: 0, base: r.range(n.base[0], n.base[1]), grudge: 0, guns: 0, cornK: n.corn, fever: 0, contact: false })),
     inbound: [], shipHere: false, letter: null, cargoHome: 0,
     used: { powder: 4, iron: 2, salt: 2, goods: 4 }, usedNow: { powder: 0, iron: 0, salt: 0, goods: 0 },
     govAlive: true, govDiedAt: null, deputy: 0, ended: null,
-    stats: { ships: 0, noShip: 0, lost: 0, starved: 0, killed: 0, feverDead: 0, nationFeverDead: 0, feverWaves: 0, nationWaves: 0, attacks: 0, breaches: 0, raids: 0, powderOut: 0, hungryWinters: 0, hungrySummers: 0, kegsHunted: 0, peak: 0, live: [], at20: null, minNationPop: Infinity, namedDead: 0, namedSent: 0, calls: 0, callsRefused: 0, expeditions: 0, carried: 0, routs: 0, feudFights: 0, pactYears: 0 },
+    stats: { ships: 0, noShip: 0, lost: 0, starved: 0, killed: 0, feverDead: 0, nationFeverDead: 0, feverWaves: 0, nationWaves: 0, attacks: 0, breaches: 0, raids: 0, powderOut: 0, hungryWinters: 0, hungrySummers: 0, kegsHunted: 0, peak: 0, live: [], at20: null, minNationPop: Infinity, parleys: 0, truces: 0, namedDead: 0, namedSent: 0, calls: 0, callsRefused: 0, expeditions: 0, carried: 0, routs: 0, feudFights: 0, pactYears: 0 },
   };
   for (const n of s.nations) n.rel = n.base;
-  s.feud = s.feud0 = r.range(D.feud[0], D.feud[1]); s.base0 = s.nations[0].base;
+  for (let i = 0; i < s.nations.length; i++) for (let j = i + 1; j < s.nations.length; j++) s.feuds[pairKey(s.nations[i], s.nations[j])] = r.range(D.feud[0], D.feud[1]);
+  s.feudNear0 = feudOf(s, ...s.nations.filter((n) => n.near)); s.hostileNear0 = s.nations.filter((n) => n.near && n.base < -15).length;
   // the settler ship that brought them goes home with the first letter
   s.shipHere = true;
   return s;
@@ -48,7 +55,9 @@ export const defenceOf = (s, armed = 1) => (s.walls * D.wallDef + menOf(s) * (D.
 // what the colony can take into the field, and what a nation can put up at home
 export const forceOf = (s, armed = 1) => (s.sold + 0.5 * (D.settlerArms + D.drillArms * s.drill) * (popOf(s) - s.sold)) * (D.unarmedDef + (D.armedDef - D.unarmedDef) * armed) * role(s, 'captain');
 /** warriors an ally sends on the colony's march against his rival */
-export const allyMarchOf = (s, n) => (s.pact && n.id !== s.pact ? s.nations.find((o) => o.id === s.pact).pop * D.warriorShare * D.pactHelp * D.allyMarch : 0);
+export const allyMarchOf = (s, n) => (s.pact && n.id !== s.pact && feudOf(s, byId(s, s.pact), n) > D.feudCares ? byId(s, s.pact).pop * D.warriorShare * D.pactHelp * D.allyMarch : 0);
+/** what the governor reckons a town can put up: right once the country is ranged, wrong by up to half before */
+export const reckonedHome = (s, n) => homeOf(n) * (1 + streamFor(s.seed, s.t, 'scout' + n.id).float(-1, 1) * D.scoutErr * (1 - s.range) * (n.near ? 1 : D.far.scout));
 export const homeOf = (n) => n.pop * D.warriorShare * D.homeEdge * (1 + n.guns * D.gunEdge);
 
 function end(s, why) { if (!s.ended) s.ended = { why, t: s.t }; }
@@ -113,7 +122,7 @@ function shipSeason(s) {
     const asked = s.plan.share && s.nations.some((n) => n.rel >= D.healerAbove);
     const d = r.float(...D.shipFeverDeath) * (asked ? D.nurseCut : 1) * role(s, 'surgeon');
     lose(s, popOf(s) * d, 'feverDead'); s.stats.feverWaves++; s.morale += D.m.fever; s.sickNow = true;
-    for (const n of s.nations) if (r.chance(n.contact ? D.crossOver : D.crossOverNoContact)) n.fever = 1;
+    for (const n of s.nations) if (r.chance((n.contact ? D.crossOver : D.crossOverNoContact) * (n.near ? 1 : 0.6))) n.fever = 1;
   }
 }
 
@@ -165,6 +174,7 @@ function summer(s, plan) {
   s.cover = Math.min(1, h('watch') / Math.max(1, popOf(s) * D.watchCover));
   s.drill = Math.min(1, s.drill * (1 - D.drillDecay) + D.drillRate * h('watch') / Math.max(1, popOf(s)));
   const out = hostile(s) ? 1 - D.harassPenalty * (1 - s.cover) : 1;
+  if (hostile(s) && s.cover < 1) lose(s, r.range(0, D.watchDeaths) * (1 - s.cover), 'killed');   // men picked off at the plough
   const craftK = (1 + 2 * s.craft / Math.max(1, popOf(s))) * role(s, 'carpenter');
 
   s.food += h('food') * D.foodPerHand * D.fieldMult(s.fields) * w * tools * out * role(s, 'husbandman');
@@ -178,11 +188,13 @@ function summer(s, plan) {
   if (s.mill) s.powder += D.millKegs / 2;
 
   // the neighbours: their harvest, the governor's dealings, the land, and their answer
+  const trading = Math.max(1, s.nations.filter((n) => ['trade', 'ally'].includes(plan.stance[n.id]) && n.rel >= D.tradeAbove).length);
   for (const n of s.nations) {
+    n.truce = Math.max(0, n.truce - 2); n.beaten = Math.max(0, n.beaten - 2);
     n.corn = Math.max(0, n.corn * 0.6 + n.pop * 2 * (n.cornK * w - 1) + n.pop * 0.25);
     n.pop *= 1.006;
     let st = plan.stance[n.id] || 'ignore';
-    const other = s.nations.find((o) => o !== n), before = n.rel;
+    const others = s.nations.filter((o) => o !== n), before = n.rel;
     if (st === 'ally') {             // a pact: asked for where the tie is good enough, kept by trading
       if (!s.pact && n.rel >= D.pactAbove) s.pact = n.id;
       st = 'trade';
@@ -191,11 +203,11 @@ function summer(s, plan) {
     n.contact = st !== 'ignore';
     if (st === 'trade') {
       const g = spend(s, 'goods', Math.min(s.goods, plan.tradeGoods ?? 4));
-      s.cargo += g * D.furPerGood * (1 + s.range);
-      if (g >= popOf(s) * D.friendshipPrice * 0.5 - 1e-9) n.rel += D.tradeTie + (s.named.interpreter ? D.roles.interpreter : 0);   // half the year's price to each of two
-      if (plan.buyLand && n.id === 'near' && popOf(s) > s.landFree - 10 && n.rel > 0 && s.goods >= D.landCost) { spend(s, 'goods', D.landCost); s.landFree += D.landPerDeal; }
+      s.cargo += g * D.furPerGood * (1 + s.range) * (n.near ? 1 : D.far.furs);   // the furs are inland
+      if (g >= popOf(s) * D.friendshipPrice / trading - 1e-9) n.rel += D.tradeTie + (s.named.interpreter ? D.roles.interpreter : 0);   // the year's price, shared among those traded with
+      if (plan.buyLand && n.near && popOf(s) > s.landFree - 10 && n.rel > 0 && s.goods >= D.landCost) { spend(s, 'goods', D.landCost); s.landFree += D.landPerDeal; }
       const kegs = spend(s, 'powder', plan.sellPowder?.[n.id] || 0);
-      if (kegs > 0) { n.guns += kegs; n.rel += kegs * D.powderTie; s.food += Math.min(n.corn, kegs * D.powderFood); n.corn = Math.max(0, n.corn - kegs * D.powderFood); for (const o of s.nations) if (o !== n) o.rel -= kegs * D.rivalSpite; }
+      if (kegs > 0) { n.guns += kegs; n.rel += kegs * D.powderTie; s.food += Math.min(n.corn, kegs * D.powderFood); n.corn = Math.max(0, n.corn - kegs * D.powderFood); for (const o of others) o.rel -= kegs * D.rivalSpite * feudOf(s, n, o) / 50; }
       if (r.chance(D.tradeFever)) {   // a fever comes back with the trading season
         const d = r.float(...D.colonyFeverDeath) * (plan.share && n.rel >= D.healerAbove ? D.nurseCut : 1) * role(s, 'surgeon');
         if (plan.share && n.rel >= D.healerAbove) n.rel += D.healerTie;
@@ -206,15 +218,16 @@ function summer(s, plan) {
       spend(s, 'powder', D.raidKegs); s.stats.raids++;
       const take = Math.min(n.corn * D.raidShare, D.raidMax) * (s.powder > 0 ? 1 : 0.5);
       s.food += take; n.corn -= take; n.rel += D.raidTie; n.grudge += D.raidGrudge; lose(s, r.range(0, 4), 'killed');
-      if (s.feud > D.fightAbove) other.rel += D.raidRivalTie;   // his enemy's enemy
+      for (const o of others) if (feudOf(s, n, o) > D.fightAbove) o.rel += D.raidRivalTie;   // his enemy's enemy
     }
     // taking a side: what is gained with one is lost with the other, as hot as their feud is
-    if (n.rel > before) other.rel -= (n.rel - before) * D.sideCost * s.feud / 100;
-    if (n.id === 'near' || popOf(s) > s.landFree * 1.5) n.rel -= Math.max(0, popOf(s) - s.landFree) * D.landPressure * (n.id === 'near' ? 1 : 0.5);
+    if (n.rel > before) for (const o of others) o.rel -= (n.rel - before) * D.sideCost * feudOf(s, n, o) / 100;
+    if (n.near || popOf(s) > s.landFree * 1.5) n.rel -= Math.max(0, popOf(s) - s.landFree) * D.landPressure * (n.near ? D.nearLand : D.far.land);
     n.grudge *= 1 - D.grudgeDecay;
     n.rel += ((n.base - n.grudge) - n.rel) * D.drift;
     n.rel = clamp(n.rel, -100, 100 - n.grudge);
   }
+  if (plan.parley) parley(s, byId(s, plan.parley), r);
   politics(s, plan, r);
   if (plan.expedition) expedition(s, s.nations.find((n) => n.id === plan.expedition), r);
   if (s.ended) return;
@@ -227,28 +240,50 @@ function summer(s, plan) {
 // The two nations have a feud of their own. When it is hot they fight; an ally calls the
 // colony out; a nation that wins too well starts naming its price.
 function politics(s, plan, r) {
-  s.feud = clamp(s.feud + r.normal(0, D.feudSd), 0, 100);
-  const ally = s.nations.find((n) => n.id === s.pact), rival = ally && s.nations.find((n) => n !== ally);
-  if (ally && ally.rel < D.pactBreaks) s.pact = null;
+  let ally = byId(s, s.pact);
+  if (ally && ally.rel < D.pactBreaks) { s.pact = null; ally = null; }
   if (s.pact) s.stats.pactYears++;
-  if (s.feud > D.fightAbove && r.chance(D.fightChance)) {
-    s.stats.feudFights++;
-    const [x, y] = [...s.nations].sort((p, q) => homeOf(q) - homeOf(p));   // the stronger, the weaker
+  let called = false;
+  for (let i = 0; i < s.nations.length; i++) for (let j = i + 1; j < s.nations.length; j++) {
+    const a = s.nations[i], b = s.nations[j], key = pairKey(a, b);
+    s.feuds[key] = clamp(s.feuds[key] + r.normal(0, D.feudSd), 0, 100);
+    // (Round 3: with six feuds and nothing to end them, one nation in the worst run was fought down
+    // to 8 people. The nations are a system with their own sense: a fight cools the feud, and a
+    // people at half strength makes peace.)
+    if (!(s.feuds[key] > D.fightAbove && r.chance(D.fightChance)) || a.pop < a.pop0 * D.suesBelow || b.pop < b.pop0 * D.suesBelow) continue;
+    s.stats.feudFights++; s.feuds[key] -= D.fightCools;
+    let [x, y] = homeOf(a) >= homeOf(b) ? [a, b] : [b, a];   // the stronger, the weaker
+    // An ally in the fight calls the colony out, once a summer. Answered, the ally has the
+    // better of it whatever the odds were; refused, he has the worse, and remembers who stayed home.
+    ally = byId(s, s.pact);
+    if (ally && (a === ally || b === ally) && !called) {
+      called = true; s.stats.calls++;
+      const rival = a === ally ? b : a;
+      if (plan.answerCall !== false) {
+        [x, y] = [ally, rival];
+        spend(s, 'powder', D.callKegs); lose(s, r.range(0, 3), 'killed');
+        rival.rel += D.callRivalTie; rival.grudge += D.callRivalGrudge; ally.rel += D.callTie;
+        const q = Math.min(rival.corn * 0.15, D.callPlunder); rival.corn -= q; s.food += q;
+      } else { [x, y] = [rival, ally]; s.stats.callsRefused++; ally.rel += D.refuseCall; s.pact = null; }
+    }
     y.pop *= 1 - D.fightLoss; x.pop *= 1 - D.fightLoss / 2;
     if (x.guns > y.guns + 10) { y.rel -= 8; y.grudge += 4; }   // the loser knows who sold the guns
-    if (s.pact) {
-      s.stats.calls++;
-      if (plan.answerCall !== false) {
-        spend(s, 'powder', D.callKegs); lose(s, r.range(0, 3), 'killed');
-        rival.rel += D.callRivalTie; rival.grudge += D.callRivalGrudge; rival.pop *= 0.97; ally.rel += D.callTie;
-        const q = Math.min(rival.corn * 0.15, D.callPlunder); rival.corn -= q; s.food += q;
-      } else { s.stats.callsRefused++; ally.rel += D.refuseCall; s.pact = null; }
-    }
   }
-  if (s.pact && ally.pop > D.hegemon * rival.pop) {   // the friend who no longer needs you
+  ally = byId(s, s.pact);
+  const foes = ally ? s.nations.filter((o) => o !== ally && feudOf(s, ally, o) > D.feudCares) : [];
+  if (ally && foes.length && ally.pop > D.hegemon * Math.min(...foes.map((o) => o.pop))) {   // the friend who no longer needs you
     if (plan.payTribute !== false && s.goods >= D.tribute) spend(s, 'goods', D.tribute); else ally.rel += D.tributeRefused;
   }
   for (const n of s.nations) n.rel = clamp(n.rel, -100, 100 - n.grudge);
+}
+
+// Goods for a truce. A nation lately beaten listens; one with a long grudge does not. The
+// truce lifts the tie just above nothing: enough to buy land next summer, if the goods are there.
+function parley(s, n, r) {
+  if (!n || n.rel >= D.warBelow + 10 || n.truce > 0 || s.goods < D.parleyGoods) return;
+  spend(s, 'goods', D.parleyGoods); s.stats.parleys++; n.contact = true;
+  const p = clamp(D.parleyBase + (n.beaten > 0 ? D.parleyBeaten : 0) + (s.named.interpreter ? D.parleyInterpreter : 0) - n.grudge / 100, 0.05, 0.9);
+  if (r.chance(p)) { s.stats.truces++; n.rel = Math.max(n.rel, D.parleyTo); n.truce = D.truceTurns; n.beaten = 0; }
 }
 
 // The one fight the governor starts. Force against what the nation can put up at home; the
@@ -260,7 +295,7 @@ function expedition(s, n, r) {
   if (ratio >= D.carried) {
     s.stats.carried++; lose(s, r.range(0, 3), 'killed'); n.pop *= 1 - D.carriedPop;
     const q = Math.min(n.corn, D.carriedCorn); n.corn -= q; s.food += q;
-    n.grudge += D.carriedGrudge; n.rel = Math.max(n.rel, D.warBelow + 15); s.morale += D.m.repulse; s.favour += D.expeditionFavour[s.charter];
+    n.grudge += D.carriedGrudge; n.rel = Math.max(n.rel, D.warBelow + 15); n.beaten = D.beatenTurns; s.morale += D.m.repulse; s.favour += D.expeditionFavour[s.charter];
   } else if (ratio >= D.standOff) { lose(s, r.range(1, 4), 'killed'); n.rel += 5; n.grudge += D.carriedGrudge / 2; }
   else { s.stats.routs++; lose(s, forceOf(s) * D.routShare, 'killed'); n.rel -= 10; s.morale += D.m.breach; }
   if (popOf(s) < D.minPop) end(s, 'overrun');
@@ -273,15 +308,15 @@ function expedition(s, n, r) {
 function war(s, r) {
   for (const n of s.nations) {
     // a partisan is his ally's enemy's target; a neutral is left alone while the two are busy with each other
-    const heat = s.pact ? (n.id !== s.pact ? D.pactTarget : 1) : 1 - s.feud / D.busyDiv;
-    if (n.rel >= D.warBelow || !r.chance(Math.min(D.attackMax, (D.attackBase + D.attackSlope * (D.warBelow - n.rel)) * heat))) continue;
+    const heat = (s.pact ? (n.id !== s.pact && feudOf(s, byId(s, s.pact), n) > D.feudCares ? D.pactTarget : 1) : 1 - hottest(s, n) / D.busyDiv) * (n.near ? 1 : D.far.attack);
+    if (n.truce > 0 || n.rel >= D.warBelow || !r.chance(Math.min(D.attackMax, (D.attackBase + D.attackSlope * (D.warBelow - n.rel)) * heat))) continue;
     s.stats.attacks++;
     const S = strengthOf(n) * r.float(0.7, 1.3);
     const kegsNeed = S * D.kegsPerAttack, kegs = spend(s, 'powder', kegsNeed), armed = kegsNeed ? kegs / kegsNeed : 1;
     if (kegs < kegsNeed) s.stats.powderOut++;
     const ally = s.nations.filter((o) => o !== n && (o.id === s.pact || o.rel > D.allyAbove)).reduce((q, o) => q + o.pop * D.warriorShare * (o.id === s.pact ? D.pactHelp : D.allyHelp), 0);
     const Dv = defenceOf(s, armed) + ally;
-    if (Dv >= S) { lose(s, r.range(0, 3), 'killed'); n.pop *= 0.97; n.rel += 6; s.morale += D.m.repulse; }
+    if (Dv >= S) { lose(s, r.range(0, 3), 'killed'); n.pop *= 0.97; n.rel += 6; s.morale += D.m.repulse; n.beaten = D.beatenTurns; }
     else { const k = (S - Dv) / S; lose(s, popOf(s) * k * D.breachPop, 'killed'); s.food *= 1 - k * D.breachFood; s.walls = Math.max(0, s.walls - 1); s.stats.breaches++; s.morale += D.m.breach; n.rel += 12; }
     if (popOf(s) < D.minPop) return end(s, 'overrun');
   }
@@ -336,17 +371,17 @@ export function view(s) {
     food: s.food, powder: s.powder, iron: s.iron, salt: s.salt, goods: s.goods, cargo: s.cargo, walls: s.walls, fields: s.fields, store: s.store, mill: s.mill, range: s.range,
     morale: s.morale, favour: s.favour, landFree: s.landFree, shipHere: s.shipHere, used: s.used, deputy: s.deputy, govAlive: s.govAlive,
     wants: D.companyWants(yearOf(s), popOf(s)), flagWalls: Math.min(6, 1 + yearOf(s) / 3), hostile: hostile(s),
-    defence: defenceOf(s), threat: Math.max(0, ...s.nations.filter((n) => n.rel < D.warBelow + 20).map(strengthOf)), wallDef: D.wallDef, foodPerHand: D.foodPerHand * D.fieldMult(s.fields), budget: D.budget[s.charter](s.favour), price: D.price[s.charter],
+    defence: defenceOf(s), threat: Math.max(0, ...s.nations.filter((n) => n.rel < D.warBelow + 20 && !(n.truce > 0)).map(strengthOf)), wallDef: D.wallDef, foodPerHand: D.foodPerHand * D.fieldMult(s.fields), budget: D.budget[s.charter](s.favour), price: D.price[s.charter],
     watchNeed: Math.min(0.2, popOf(s) * D.watchCover / Math.max(1, handsOf(s, false))), cargoPerHand: D.cargoPerHand * (1 + s.range),
-    feud: s.feud, pact: s.pact, drill: s.drill, force: forceOf(s), named: { ...s.named }, emptyPlaces: s.noNames ? 0 : ROLES.filter((k) => !s.named[k]).length, friendshipPrice: popOf(s) * D.friendshipPrice,
-    nations: s.nations.map((n) => ({ id: n.id, rel: n.rel, grudge: n.grudge, guns: n.guns, corn: n.corn, pop: n.pop, home: homeOf(n), strength: strengthOf(n), allyMarch: allyMarchOf(s, n) })) };
+    feudMax: Math.max(...Object.values(s.feuds)), pact: s.pact, drill: s.drill, force: forceOf(s), named: { ...s.named }, emptyPlaces: s.noNames ? 0 : ROLES.filter((k) => !s.named[k]).length, friendshipPrice: popOf(s) * D.friendshipPrice,
+    nations: s.nations.map((n) => ({ id: n.id, rel: n.rel, grudge: n.grudge, guns: n.guns, corn: n.corn, pop: n.pop, near: n.near, truce: n.truce, home: reckonedHome(s, n), strength: strengthOf(n), allyMarch: allyMarchOf(s, n), feuds: Object.fromEntries(s.nations.filter((o) => o !== n).map((o) => [o.id, feudOf(s, n, o)])) })) };
 }
 
 // A turn is "live" when something is pressing: the proxy for claim 5 (docs/KILLGATE.md says
 // what it does and does not show).
 function pressing(s) {
   const pop = popOf(s);
-  return { food: s.food < pop * 1.5, war: s.nations.some((n) => n.rel < D.warBelow + 15), land: pop > s.landFree - 5, backers: s.favour < 35, powder: s.powder < 6 + pop / 12 && !s.mill, temper: s.morale < 40, fever: !!s.sickNow };
+  return { food: s.food < pop * 1.5, war: s.nations.some((n) => n.rel < D.warBelow + 15 && !(n.truce > 0)), land: pop > s.landFree - 5, backers: s.favour < 35, powder: s.powder < 6 + pop / 12 && !s.mill, temper: s.morale < 40, fever: !!s.sickNow };
 }
 
 export function step(s, policy, skill = 1, fallback = null) {

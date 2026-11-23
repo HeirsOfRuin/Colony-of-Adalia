@@ -6,9 +6,10 @@
 - Built with the HeirsOfRuin game-building skills (`Game-Workshop/skills/`).
   Read `game-building/SKILL.md` before writing game logic. Follow its stages
   and gates; skipping a stage is allowed, skipping it silently is not.
-- `docs/FRAME-war.md` is the outline of war beside trade and diplomacy. It is
-  not approved. The nations' feud and the sixth job (the watch) are proposals
-  in it; do not write either into content until the author has answered it.
+- `docs/DESIGN.md` is the Phase 0 proposal and waits for the author's approval.
+  Read it before touching `src/`. `docs/FRAME-war.md` is the accepted design of
+  war beside trade and diplomacy: four nations, six feuds, the watch, parley.
+  The nations are `n1`, `n2`, `f1`, `f2` until the canon sheet names them.
 - The stage this repo is at is written at the top of `docs/KILLGATE.md`. No
   screen is drawn and no scene is written until the author has read the kill
   gate and `docs/DESIGN.md` is approved.

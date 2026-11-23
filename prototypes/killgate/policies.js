@@ -61,15 +61,17 @@ function adaptive(v, o) {
 }
 
 export function policy(o = {}) {
-  o = { order: 'ahead', neighbours: 'trade', split: 'adaptive', hunt: 'need', share: true, deputy: true, ration: 'adaptive', sellPowder: false, expedition: false, raidRival: false, ...o };
+  o = { order: 'ahead', neighbours: 'trade', split: 'adaptive', hunt: 'need', share: true, deputy: true, ration: 'adaptive', sellPowder: false, expedition: false, raidRival: false, parley: false, ...o };
   return {
     opts: o,
     summer(v) {
       const stance = {}, sell = {};
-      // the partisan picks the nation that likes him better and stands by it; its rival he leaves, or raids when hungry
+      // the partisan picks the nation that likes him best and stands by it. Its enemies he leaves alone, or raids when
+      // hungry; with the rest he trades.
       const friend = v.pact || [...v.nations].sort((a, b) => b.rel - a.rel)[0].id;
+      const foe = (n) => n.feuds[friend] > 40;
       for (const n of v.nations) {
-        if (o.neighbours === 'partisan') stance[n.id] = n.id === friend ? (v.goods >= 2 ? 'ally' : 'ignore') : o.raidRival && v.food < v.pop * 1.6 && v.powder >= 6 && n.corn > 40 && n.rel < 0 ? 'raid' : 'ignore';
+        if (o.neighbours === 'partisan') stance[n.id] = n.id === friend ? (v.goods >= 2 ? 'ally' : 'ignore') : !foe(n) ? (v.goods >= 2 ? 'trade' : 'ignore') : o.raidRival && v.food < v.pop * 1.6 && v.powder >= 6 && n.corn > 40 && n.rel < 0 ? 'raid' : 'ignore';
         else if (o.neighbours === 'trade') { stance[n.id] = v.goods >= 2 ? 'trade' : 'ignore'; if (o.sellPowder && v.food < v.pop * 1.2 && v.powder > 8) sell[n.id] = 3; }
         else if (o.neighbours === 'raid') stance[n.id] = v.food < v.pop * 1.6 && v.powder >= 3 && n.corn > 40 ? 'raid' : 'ignore';
         else stance[n.id] = 'ignore';
@@ -77,7 +79,9 @@ export function policy(o = {}) {
       const build = v.fields < 6 ? 'fields' : v.store < 2 ? 'store' : !v.mill && v.craft >= 6 ? 'mill' : 'fields';
       return {
         split: o.split === 'adaptive' ? adaptive(v, o) : SPLITS[o.split], stance, sellPowder: sell, share: o.share,
-        tradeGoods: Math.min(v.goods * 0.5, Math.max(4, v.friendshipPrice * (o.neighbours === 'partisan' ? 1 : 0.5))), buyLand: o.neighbours === 'trade' || o.neighbours === 'partisan', build, press: v.food < v.pop * 0.8,
+        tradeGoods: ((k) => Math.min(v.goods * 0.8 / k, Math.max(2, v.friendshipPrice / k)))(Math.max(1, Object.values(stance).filter((x) => x === 'trade' || x === 'ally').length)),
+        // a truce is asked of the worst neighbour at or near war, when there are goods to ask with
+        parley: o.parley && v.goods >= 10 ? [...v.nations].filter((n) => n.rel < -20 && !(n.truce > 0)).sort((a, b) => a.rel - b.rel)[0]?.id : undefined, buyLand: o.neighbours === 'trade' || o.neighbours === 'partisan', build, press: v.food < v.pop * 0.8,
         answerCall: o.answerCall !== false, payTribute: o.payTribute !== false,
         // march only on a neighbour already at war with us, and only with a quarter more than his town can put up
         expedition: o.expedition ? v.nations.find((n) => n.rel < -30 && v.force + n.allyMarch > n.home * 1.25 && v.powder >= 10)?.id : undefined,

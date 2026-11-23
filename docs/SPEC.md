@@ -2,9 +2,10 @@
 
 Status: **approved to go to its kill gate, 2026-11-22.** Stage 1 of the
 `game-building` workflow is done; the author answered the open questions (see
-Decisions). The kill gate has had two rounds: `docs/KILLGATE.md` has the
-numbers. After round 2 no claim plainly fails; claims 3 and 4 are improved and
-not yet clean. Nothing below this line
+Decisions). The kill gate has had three rounds and is passed with five named
+risks: `docs/KILLGATE.md`. The design proposal is `docs/DESIGN.md`, waiting for
+the author. Where the Decisions table below differs from the text above it (four
+nations, not two or three), the table wins. Nothing below this line
 has been changed since the author approved it, except the note under
 "Assumptions and risks" on House of Adalia.
 
@@ -244,6 +245,7 @@ This page is the whole brief; the chat it came from is gone. In order:
 
 | Date | Decision |
 |---|---|
+| 2026-11-23 | **Four nations, and start the design.** Shown round 2 and the war frame. The author: "Go with recommendations and suggestions. Expand nations to 4 total, 2 near and 2 a bit further". Read here as: (1) four nations, two near and two further off, replacing "two or three" above and the first playable's "two nations"; (2) start `docs/DESIGN.md` with the open faults carried as named risks (the recommendation); (3) the war frame's rule and its proposed fixes are accepted to be built and measured (the suggestions): no separate army, three beats to a fight, parley, a town's strength hidden until the country is ranged, a captain whose temper can override an order. Round 3 of the gate measured the numbers side. |
 | 2026-11-23 | **Round 2 of the kill gate, and war.** Shown round 1 and four questions, with the recommendation to answer the neighbours (politics between the nations) and hunger (a small named cast) first. The author: "Go with recommendations, also outline how military actions and play out will work along the other systems of trade and diplomacy". Read here as: build both into the gate now; the late ship and the hostile start stay open. Done in `docs/KILLGATE.md` round 2 and `docs/FRAME-war.md`. The nations' feud and the sixth job (the watch) are proposals in that frame, not yet approved. |
 | 2026-11-22 | **One life.** The author: "Colony is one person's life. You create your character at the start of the game, with heavily influenced added bonuses coming from your previous games saves or from the quick decision backgrounds you choose." |
 | 2026-11-22 | **The win.** The author: "Winning is seeing the colony surpass your own life." Read here as: the colony stands ten years after the governor's death. The ten is a guess. |

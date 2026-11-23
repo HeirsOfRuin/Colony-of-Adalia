@@ -22,7 +22,7 @@ export const D = {
   ironUsePerHand: 0.035,     // tools wear; short of iron, every job slows
   ironShortPenalty: 0.45,
   spoil: 0.28, spoilSalted: 0.06, saltPerFood: 0.035, storeSpoilCut: 0.2,
-  harassPenalty: 0.25,       // field and cargo work under a hostile nation
+  harassPenalty: 0.35,       // field and cargo work under a hostile nation
 
   // winter
   huntFoodPerKeg: 5, huntKegsPerHead: 1 / 14,
@@ -57,8 +57,12 @@ export const D = {
 
   // the nations
   nations: [
-    { id: 'near', pop: 560, base: [-45, 35], corn: 1.18 },
-    { id: 'far',  pop: 400, base: [-45, 35], corn: 1.12 },
+    // Round 3: four nations, the author's decision. Two on the colony's doorstep, two a few
+    // days inland. Ids are places in a table, not names: the canon sheet names them.
+    { id: 'n1', near: true,  pop: 330, base: [-45, 35], corn: 1.18 },
+    { id: 'n2', near: true,  pop: 250, base: [-45, 35], corn: 1.15 },
+    { id: 'f1', near: false, pop: 420, base: [-45, 35], corn: 1.12 },
+    { id: 'f2', near: false, pop: 300, base: [-45, 35], corn: 1.10 },
   ],
   warriorShare: 0.25, tradeTie: 3, tradeAbove: -10, giftTie: 6, giftCost: 5, furPerGood: 1.5,
   cornPrice: 0.8, cornSold: 0.25, powderTie: 3, powderFood: 8, rivalSpite: 2,
@@ -70,7 +74,18 @@ export const D = {
   commit: [0.6, 1.2],        // how much of its strength a nation sends: more as the tie worsens
   breachPop: 0.35, breachFood: 0.3, allyAbove: 50, allyHelp: 0.3, allyCorn: 0.2,
 
-  // politics between the two nations (round 2). The feud is theirs; the colony chooses a side or none.
+  // what being further off changes: they come less often and care less about the colony's
+  // fields, they have the furs, and less is known of them
+  far: { attack: 0.5, land: 0.3, furs: 1.5, scout: 1.5 },
+  nearLand: 0.6,             // each near nation's share of the land pressure
+  // parley (round 3): goods for a truce with a nation at or near war
+  parleyGoods: 8, parleyBase: 0.3, parleyBeaten: 0.35, parleyInterpreter: 0.15, parleyTo: 5, truceTurns: 6, beatenTurns: 4,
+  scoutErr: 0.5,             // how wrong the governor's reckoning of a town can be with the country unranged
+  watchDeaths: 3,            // field hands lost in a summer under a hostile neighbour with no watch kept
+  fightCools: 8, suesBelow: 0.5,   // a fight spends some of the feud; a nation at half its strength at landing will not fight another
+  feudCares: 40,             // above this two nations count as enemies: an ally will march, a partisan is a target
+
+  // politics between the nations (round 2; pairwise since round 3). The feuds are theirs; the colony chooses a side or none.
   feud: [10, 90], feudSd: 7, fightAbove: 55, fightChance: 0.5, fightLoss: 0.04,
   sideCost: 1.0,             // tie lost with one nation per point gained with the other, at a feud of 100
   friendshipPrice: 1 / 40,   // goods a head a year below which a trading season wins no tie: a rich colony gives more

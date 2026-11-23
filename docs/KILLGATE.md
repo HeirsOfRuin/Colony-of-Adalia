@@ -1,23 +1,173 @@
 # Kill gate: results
 
-**Where the build is (2026-11-23):** Stage 2 of the game-building workflow, two
-rounds run. The repo is scaffolded (Stage 4's instruments exist, with the kit's
-placeholder story in them). No design document is written, no screen is drawn
-and no scene is written. **The next step is the author's: read round 2 below,
-`docs/FRAME-war.md`, and the questions at the end of each.**
+**Where the build is (2026-11-23):** Stage 2 of the game-building workflow is
+done at round 3, and Stage 3 has started: `docs/DESIGN.md` is written and waits
+for the author's approval. The repo is scaffolded (Stage 4's instruments exist,
+with the kit's placeholder story in them). No screen is drawn and no scene is
+written.
 
 The kill gate is a numbers-only model of one governor's colony: ships, hands,
-food, powder, two nations and their feud, war, sickness, eight named settlers,
-the backers, the governor's death and the ten years after it. No names of
-places or peoples, no prose, no UI. It answers the question `SPEC.md` set: are
-the decisions interesting as a table of numbers, and do the eight claims under
-"Proof before screens" hold?
+food, powder, four nations and their feuds, war and parley, sickness, eight
+named settlers, the backers, the governor's death and the ten years after it.
+No names of places or peoples, no prose, no UI. It answers the question
+`SPEC.md` set: are the decisions interesting as a table of numbers, and do the
+eight claims under "Proof before screens" hold?
 
-Round 2 is the current model and the current verdict. Round 1 is kept below it
-as the record: its tables are from the model as it was on 2026-11-22 and
-`npm run gate` no longer reproduces them.
+Round 3 is the current model and the current verdict; `npm run gate` reproduces
+it. Rounds 2 and 1 are kept below as the record of how it got here, and their
+tables are from the model as it was then.
+
+## Round 3: the gate is passed, with five named risks
+
+The author, shown round 2: "Go with recommendations and suggestions. Expand
+nations to 4 total, 2 near and 2 a bit further". Read as: start the design
+(the recommendation), build the war frame's proposed fixes into the model (the
+suggestions), and four nations.
+
+30 arms × 1,000 seeds = **30,000 runs**, every arm on the same seeds, ±1 SE.
+
+| # | Claim | Round 2 | Round 3 | The number |
+|---|---|---|---|---|
+| 1 | The wait is the game | Thin at ten years | **Holds; still thin at ten years** | Perfect ships beat real ships by 35.9 ±1.7 points of win rate, and by 4.1 ±0.8 at ten years. Ordering ahead beats ordering for today by 28.0 ±1.4 |
+| 2 | Powder is a clock | Holds | **Holds** | Hunting every winter: 0.95 breaches a life against 0.42, and no better at winning (31.2 against 30.2). Hunting hard for six years and then stopping is best: 39.2 |
+| 3 | The neighbours are not a hazard table | Not clean | **Holds** | Best on a seed: trade and parley 24%, take a side 21%, side and raid the rival 18%, trade with all 15%, trade and sell powder 11%, keep apart 10%, raid 1% |
+| 4 | No best job | Not clean | **Holds against a thinking governor; one fixed answer is still ahead** | The careful rule wins 30.2%; the best fixed split (60% food) 18.9%. That split is the best fixed one on 54% of seeds (was 58%, and 79% in round 1) |
+| 5 | The middle is not dead | Proxy | **Holds, by the same proxy** | Years ten to twenty: 5.4% of turns with nothing pressing |
+| 6 | Winning is reachable and uncommon | Holds | **Holds, on target** | Careful 30.2 ±1.5% (target: about a third). Careless 1.7 ±0.4% |
+| 7 | Crown and company both worth choosing | Holds | **Holds** | Crown 27.5%, company 30.2%, gap -2.7 ±1.7 (noise). Company best on 57% of seeds |
+| 8 | Sickness cuts both ways and ends nobody | Holds | **Holds, with a fault** | Both peoples hit in 88.6% of lives. Of 1,300 people in the four nations, 68 die of fever in a life. Sharing cures: ties +13.9 ±0.7, but 4.5 ±1.4 points *fewer* wins |
+
+**The careful governor now:** alive and in office at year ten in 92.4 ±0.8% of
+lives; wins 30.2 ±1.5%. He is recalled 31%, loses the colony to mutiny after
+his death 23%, to mutiny in office 10%, abandoned after his death 5%.
+
+### What changed in the model
+
+1. **Four nations.** Two on the doorstep (330 and 250 people), two a few days
+   inland (420 and 300). The near ones feel the colony's fields and sell the
+   land. The far ones come half as often, have half as many furs again, mind
+   the land a third as much, and are harder to reckon before the country is
+   ranged.
+2. **Six feuds, one for each pair,** each its own. An ally marches only against
+   his own enemies; a partisan trades with everyone who is not one.
+3. **A fight cools a feud, and a nation at half strength makes peace.** Without
+   this, in the worst of 1,000 runs one nation was fought down to 8 people by
+   its neighbours. The spec says the nations are a system, not a hazard table;
+   a system has a floor.
+4. **Parley.** Eight goods for a truce with a nation at or near war. A nation
+   lately beaten listens; one with a long grudge does not. A truce lifts the tie
+   just above nothing for three years: long enough to buy land, if the goods
+   are there.
+5. **The governor's reckoning of a town can be wrong** by up to half until the
+   country is ranged. Marches are now lost: 0.30 routs in 2.91 marches a life.
+6. **An ally's call decides his fight.** Answered, he has the better of it;
+   refused, the worse.
+7. **The watch has teeth.** Under a hostile neighbour with no watch, field and
+   cargo work lose 35% (was 25%) and men are picked off at the plough.
+
+### Round 3 tables
+
+Endings are % of runs; `+` means after the governor's death.
+
+**The neighbours (claim 3)**
+
+| Dealings | Ten years | Win | Attacks | Breaches | Endings |
+|---|---|---|---|---|---|
+| Trade with all four | 92.4 ±0.8 | 30.2 ±1.5 | 1.9 | 0.42 | recalled 31, stands 30, mutiny+ 23, mutiny 10 |
+| Trade, and parley with the worst | 92.8 ±0.8 | 34.5 ±1.5 | 1.2 | 0.34 | stands 35, recalled 27, mutiny+ 24 |
+| Take a side | 94.8 ±0.7 | 29.2 ±1.4 | 8.1 | 0.78 | stands 29, recalled 28, mutiny+ 24, mutiny 13 |
+| Take a side and march with the ally | 95.0 ±0.7 | 38.3 ±1.5 | 3.9 | 0.58 | stands 38, recalled 25, mutiny+ 22 |
+| Take a side, raid his enemies | 79.2 ±1.3 | 27.9 ±1.4 | 16.4 | 4.20 | mutiny 34, stands 28, mutiny+ 17 |
+| Trade, sell powder when hungry | 92.7 ±0.8 | 25.1 ±1.4 | 3.1 | 0.75 | recalled 37, stands 25 |
+| Keep apart | 87.4 ±1.0 | 21.9 ±1.3 | 4.9 | 0.71 | recalled 46, stands 22 |
+| Raid when hungry | 46.1 ±1.6 | 1.7 ±0.4 | 8.1 | 6.63 | mutiny 48, overrun 36 |
+
+No row is best on more than a quarter of seeds. Keeping apart has the largest
+colony at year ten on 39% of seeds and then loses it to the company for want of
+furs: a real trade, not a mistake.
+
+**War**
+
+| | Win | Killed | Marches (carried, routed) | Calls | Parleys (truces) |
+|---|---|---|---|---|---|
+| Careful | 30.2 ±1.5 | 6 | 0 | 0 | 0 |
+| Careful, parleys | 34.5 ±1.5 | 4 | 0 | 0 | 1.9 (0.9) |
+| Careful, marches on a hostile neighbour | 31.6 ±1.5 | 10 | 2.91 (2.04, 0.30) | 0 | 0 |
+| Careful, keeps no watch | 20.4 ±1.3 | 16 | 0 | 0 | 0 |
+| Takes a side, answers the call | 29.2 ±1.4 | 22 | 0 | 4.1 | 0 |
+| Takes a side, refuses the call | 32.0 ±1.5 | 10 | 0 | 1.6 | 0 |
+| Takes a side and marches | 38.3 ±1.5 | 28 | 7.32 (6.61, 0.20) | 4.0 | 0 |
+
+Paired gaps in win rate: no watch, **-9.8 ±1.3** (was noise). Parley,
+**+4.3 ±1.1**. Marching with an ally over a pact that never marches,
+**+9.1 ±1.6**. Marching alone, +1.4 ±1.1 `~`. Answering the call over refusing
+it, **-2.8 ±1.3**: answering is now slightly the worse choice.
+
+**The named few**
+
+| | Win | Starved a life | Named dead | Places filled at the end |
+|---|---|---|---|---|
+| Careful, eight named | 30.2 ±1.5 | 114 | 7.0 | 3.8 of 8 |
+| Careful, nobody named | 11.4 ±1.0 | 80 | 0 | 0 |
+| Careful, the named cannot die | 44.5 ±1.6 | | 0 | 8 of 8 |
+
+Having the eight is worth 18.8 ±1.4 points; their being mortal costs 14.3 ±1.3.
+
+**The start.** Win %, by how many of the two near nations land hostile
+(temper below -15):
+
+| Hostile on landing | Seeds | Trade with all | Trade and parley | Take a side | Side and march | Keep apart |
+|---|---|---|---|---|---|---|
+| Neither | 392 | 40.1 ±2.5 | 44.9 ±2.5 | 40.3 ±2.5 | 49.5 ±2.5 | 33.4 ±2.4 |
+| One | 462 | 27.3 ±2.1 | 31.0 ±2.2 | 24.9 ±2.0 | 35.3 ±2.2 | 16.5 ±1.7 |
+| Both | 146 | 13.0 ±2.8 | 17.8 ±3.2 | 13.0 ±2.8 | 17.8 ±3.2 | 8.2 ±2.3 |
+
+With one near nation the worst start was 37% of seeds and four times as hard.
+With two, the worst start is 15% of seeds and about three times as hard, and
+the middle case has an answer (side and march: 35.3%).
+
+**The hands (claim 4).** Best fixed split on a seed: plough 54%, arms 13%,
+build 13%, cargo 12%, even 4%, wall 4%. With the careful rule in the
+comparison: careful 47%, plough 27%.
+
+**Powder (claim 2)**
+
+| Hunting | Win | Starved | Kegs hunted | Attacks met short of powder | Breaches |
+|---|---|---|---|---|---|
+| Only when hungry (careful) | 30.2 ±1.5 | 114 | 22 | 0.13 | 0.42 |
+| Every winter to year six | 39.2 ±1.5 | 137 | 57 | 0.36 | 0.48 |
+| Every winter | 31.2 ±1.5 | 111 | 153 | 0.99 | 0.95 |
+| Never | 29.9 ±1.4 | 115 | 20 | 0.12 | 0.43 |
+
+### The five risks carried into the design
+
+These are what is left. Each has its number and each is named in
+`docs/DESIGN.md` with what the design does about it.
+
+**R1. The ship's lateness is thin in the first ten years** (4.1 ±0.8 points),
+and the first playable is the first ten years. Over a life it is 35.9.
+
+**R2. Both near nations hostile is close to a lost game:** 13.0% to 17.8%
+against 40% to 50%. It is 15% of starts.
+
+**R3. Answering an ally's call is slightly wrong** (-2.8 ±1.3) and marching
+without an ally is worth nothing measurable (+1.4 ±1.1).
+
+**R4. Sharing cures costs wins** (-4.5 ±1.4) while it improves ties by 14.
+The spec makes nursing the way the deepest ties are made; the tie has to buy
+something it does not buy yet.
+
+**R5. One fixed split is still the best fixed split on half of seeds,** and
+mutiny is still how most colonies end (33% of careful lives, in office or
+after). Morale is one number with no factions in it.
+
+Also true and not a risk to the numbers: 114 people starve in a careful life
+(fault K in round 2), claim 5 is a proxy, and nothing here tests factions,
+marriage, the governor's family or the dynasty code.
 
 ## Round 2 (2026-11-23): no claim plainly fails; two are not yet clean
+
+*The record of the second round: two nations, one feud. Superseded by round 3 above.*
 
 The author, shown round 1: "Go with recommendations, also outline how military
 actions and play out will work along the other systems of trade and diplomacy".

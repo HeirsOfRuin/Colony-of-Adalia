@@ -1,9 +1,12 @@
 # Frame: war, beside trade and diplomacy
 
-Status: **outline for the author, 2026-11-23. Not approved, nothing on a screen.**
-The numbers side of it has been through round 2 of the kill gate
-(`docs/KILLGATE.md`); what was measured is marked below, and what is only
-proposed is marked too.
+Status: **accepted to be built and measured, 2026-11-23.** The author, shown
+this frame: "Go with recommendations and suggestions. Expand nations to 4
+total, 2 near and 2 a bit further". The rule, the three beats, parley, the
+hidden strength of a town and the captain's temper are accepted on that
+instruction. Nothing is on a screen. The numbers side has been through round 3
+of the kill gate (`docs/KILLGATE.md`); what is measured and what is still only
+designed is marked below.
 
 ## The request
 
@@ -37,7 +40,7 @@ Three consequences follow, and each is a rule for the build:
 1. **No fight without a reason the player can read.** A nation attacks because
    its tie has fallen below war, and the screen says why it fell: land, a raid
    remembered, guns sold to its rival, a call answered against it.
-2. **The world fights by the same rules.** The two nations have a feud of their
+2. **The world fights by the same rules.** The four nations have feuds of their
    own. They raid each other for the same reason the colony raids (hunger),
    call their allies out, and make terms when they are losing.
 3. **A battle is short and decides something else.** No fight is longer than
@@ -68,12 +71,12 @@ watch**: men under arms through the summer. It does two things.
 
 - **It covers the field.** A hostile nation does not need to storm the wall to
   starve the colony; it picks off men at the plough. Uncovered, food and cargo
-  work lose a quarter of the summer. Eight men under arms in a hundred covers it.
+  work lose 35% of the summer and up to three men. Eight men under arms in a
+  hundred covers it.
 - **It drills.** Each summer on the watch raises the trained band; a summer off
   it loses a tenth.
 
-Measured: keeping no watch costs 2.1 ±1.3 points of win rate, which is noise.
-See "What the numbers say" below. The watch is the weakest part of this frame.
+Measured in round 3: keeping no watch costs 9.8 ±1.3 points of win rate.
 
 ### 3. The magazine
 
@@ -97,7 +100,7 @@ One military order a summer. Winter is for standing to.
 | **Refuse the call** | When the ally calls | Nothing today | Loses the cheap corn | The pact ends, tie -20 | Yes |
 | **Escort the traders** | A trading season | Soldiers off the wall | Protects furs and men on the road | Seen as a threat by a wary nation | Proposed |
 | **Hold a blockhouse** | Once land is bought or taken | Men garrisoned away, powder split | A trading post; a second place to lose | A claim on the land, read as one | Proposed |
-| **Parley** | During any war | Goods, hostages, a marriage | Reopens trade on terms | Ends the war; the grudge stays | Proposed |
+| **Parley** | With a nation at or near war | 8 goods; in the game also hostages or a marriage | A truce long enough to buy land | Three years' truce; the grudge stays. A nation lately beaten listens, one long wronged does not | Yes (goods only) |
 
 ### 5. How a fight plays out
 
@@ -137,16 +140,21 @@ of a good a head a year in the model). Trade needs the road open, so a hostile
 nation costs furs as well as safety. An ally sells corn cheaper. Powder is a
 trade good and a weapon in the same keg.
 
-**Diplomacy.** The nations have a feud. What the colony gains with one it loses
-with the other, in proportion to how hot the feud is. That makes three stances,
-not one:
+**Diplomacy.** There are four nations, two near and two further off, and each
+pair has a feud of its own: six of them, different on every start. What the
+colony gains with one nation it loses with that nation's enemies, in
+proportion to how hot their feud is. The far nations come to the wall half as
+often, hold the best furs, and are harder to reckon before the country is
+ranged. That makes three stances, not one:
 
-- **Trade with both.** Best while the feud is cold. When it is hot, each
-  season's gain with one is nearly cancelled with the other.
-- **Take a side.** A pact: the ally's warriors behind the wall and on the
-  march, cheap corn, and the rival's attacks come half again as often. An ally
+- **Trade with all.** Best while the feuds are cold. Where one is hot, each
+  season's gain with one side is nearly cancelled with the other. The price of
+  friendship is shared among everyone traded with, so four friends are thin ones.
+- **Take a side.** A pact with one nation. The colony goes on trading with
+  anyone who is not that nation's enemy. The ally's warriors behind the wall
+  and on the march (against his own enemies only), cheap corn, and the rival's attacks come half again as often. An ally
   who grows much stronger than his rival begins to name a tribute.
-- **Keep apart.** While the two are busy with each other they leave a neutral
+- **Keep apart.** While the nations are busy with each other they leave a neutral
   colony alone, in proportion to the feud. No furs, no corn, no fevers from the
   trading season, and no one to call on.
 
@@ -165,73 +173,79 @@ thirds there in year twenty.
 The figures are the model's own, from `defenceOf`, `strengthOf`, `forceOf`,
 `homeOf` and `allyMarchOf` in `prototypes/killgate/model.js`.
 
-Year nine. The colony is 130 people, 16 of them soldiers, the trained band half
-drilled, the wall at 5. The near nation's tie is -46 after three summers of the
-colony spreading onto land it never sold; the far nation's is +38, and the two
-have been fighting for two years.
+Year six. The colony is 110 people, 10 of them soldiers, the trained band
+barely drilled, the wall at 2, the country a third ranged. The larger near
+nation's tie is -70 after a raid for corn in the second winter. The larger far
+nation's is +38, and those two have been at feud for years.
 
-The screen shows: behind the wall the colony can stand off 79. The near nation
-could send 106, give or take three tenths. It will come this winter or next,
-and more often than not the wall will go.
+The screen shows: behind the wall the colony can stand off 43. The near nation
+could send 83, give or take three tenths. It will come this winter or next and
+the wall will go.
 
-- **Trade with both** is closed: the near nation will not trade below -10.
-- **A pact with the far nation** puts 50 of its warriors behind the wall: 129
-  against 106. It costs the near nation's tie another slide every season the
-  pact is kept, and a call every year or two.
+- **Trade** with that nation is closed: it will not trade below -10.
+- **Parley.** Eight goods. Its grudge is long and it has not been beaten: about
+  one chance in six of a truce, and that with the interpreter alive.
+- **A pact with the far nation** puts 53 of its warriors behind the wall: 96
+  against 83. It costs the near nation's tie a further slide every season the
+  pact is kept, and a call every few years.
 - **March with them on the near nation's town.** The colony's field strength is
-  42; the ally brings 25; the town can put up 49, give or take a fifth. Sixty-
-  seven against at most 59 is carried. Five kegs from the magazine. *In force*,
-  they may ask terms before a shot and the kegs are saved. *Press it* brings
-  home 30 rations and a grudge of 12; *offer terms* brings none of the corn and
-  half the grudge. (The beats are proposed; the model resolves the march in one
-  step, always pressed.)
-- **Keep apart and build the wall** from 5 to 9 raises the 79 to 92, still
-  short, and takes a fifth of the hands for several summers that the company's
-  cargo also needs.
+  25; the ally brings 26; the town can put up 29, give or take a fifth. But the
+  country is a third ranged, so the governor's reckoning of that 29 may be out
+  by 10 either way. Fifty-one against a true 35 at worst is carried. Without
+  the ally, 25 against 29 is not, and a governor whose reckoning said 19 would
+  have marched. Five kegs from the magazine either way. Carried, the town is
+  beaten: now it will listen to a parley.
+- **Keep apart and build the wall** from 2 to 6 raises the 43 to 57, still
+  short of 83, and takes a fifth of the hands for several summers.
 
-None of these is free. One of them is too safe: sixty-seven against at most 59
-cannot lose, which is fault 1 below.
+The march and the parley are one plan, in that order. That is the join between
+war and diplomacy the frame is after.
 
-## What the numbers say (round 2, 1,000 seeds an arm, ±1 SE)
+## What the numbers say (round 3, 1,000 seeds an arm, ±1 SE)
 
 | Question | Result |
 |---|---|
-| Is trading still simply right? | No longer. Best on a seed: trade with both 34%, trade and sell powder 23%, take a side 21%, side and raid the rival 14%, keep apart 7%, raid 2% |
-| Does the feud change the answer? | Yes. With the feud hot at landing, siding and raiding the rival wins 31.1 ±2.5% against 16.8 ±1.9% when it is cold. Trading with both falls from 42.4 to 34.7 |
-| Is a pact worth having without marching? | No. Taking a side and only answering calls wins 28.2 ±1.4%, against 38.6 ±1.5% for trading with both |
-| Is marching with an ally worth it? | Yes: +10.0 ±1.2 points over a pact that never marches |
-| Is the expedition worth it alone? | Barely: +1.6 ±0.7 points, one march a life |
-| Does answering the call matter? | Not measurably: +0.3 ±1.0 over refusing |
-| Does the watch matter? | Not measurably: no watch costs 2.1 ±1.3 points |
-| Does a march ever fail? | Not in the model: 0.00 routs. The bot marches only with a quarter more than the town can put up, and at that margin the roll cannot lose it |
+| Is one way of dealing with the neighbours simply right? | No. Best on a seed: trade and parley 24%, take a side 21%, side and raid his enemies 18%, trade with all 15%, trade and sell powder 11%, keep apart 10%, raid 1% |
+| Is a pact worth having without marching? | No: 29.2 ±1.4% against 30.2 ±1.5% for trading with all |
+| Is marching with an ally worth it? | Yes: +9.1 ±1.6 points over a pact that never marches. It is the strongest single policy measured: 38.3 ±1.5% |
+| Is parley worth its goods? | Yes: +4.3 ±1.1 points, from about two parleys and one truce a life |
+| Does the watch matter? | Yes, since round 3: no watch costs 9.8 ±1.3 points |
+| Can a march be lost? | Yes, since round 3: 0.30 routs in 2.91 marches a life |
+| Is marching without an ally worth it? | Not measurably: +1.4 ±1.1 |
+| Does answering an ally's call pay? | No: 2.8 ±1.3 points *worse* than refusing |
 
-## Faults in this frame, found by the gate
+## Faults fixed since the outline
 
-1. **The expedition has no risk.** A cautious rule never loses one. Either the
-   roll must be wider, or the nation's strength at home must be partly hidden
-   until the country is ranged. The second is better: it gives ranging a
-   military use and makes information worth something.
-2. **Answering an ally's call is not a decision** in the numbers. The cost
-   (3 kegs, a few men, the rival's enmity) and the gain (the pact kept) cancel.
-   It needs a real stake: the ally losing its war if the colony stays home.
-3. **The watch is nearly decoration.** A quarter of the summer's work is
-   evidently not enough of a threat, or eight in a hundred is too cheap.
-4. **A hostile nearest neighbour is still a lost game:** 12.0 ±1.7% for trading
-   with both, 13.4 ±1.8% for siding with the far nation and marching. War does
-   not yet rescue a bad start; parley, which is not modelled, is the missing
-   way out.
-5. **Parley, escorts and blockhouses are not modelled.** They are the proposed
-   half of the table above.
+1. **The expedition had no risk.** The governor's reckoning of a town is now
+   wrong by up to half until the country is ranged. Ranging has a military use.
+2. **The watch was nearly decoration.** Under a hostile neighbour with no watch
+   kept, the summer's work loses 35% and men are picked off at the plough.
+3. **A hostile neighbour had no way out.** Parley is in.
+4. **The nations could be fought to nothing.** A fight now cools the feud, and
+   a nation at half its strength makes peace.
 
-## What the author is asked
+## Faults still open
 
-1. Is the rule right: war as the third way of dealing with a neighbour, spending
-   the colony's own hands, powder and goods, with no separate army?
-2. Three beats to a fight, one order each. Enough, or too much for a game whose
-   centre is the wait for a ship?
-3. Should a captain's temper be able to override an order?
-4. The nations' feud is new canon. It needs their names and their quarrel on
-   the canon sheet before it is written into a scene.
+1. **Answering an ally's call is the wrong choice by a little.** It costs
+   powder, men and another nation's enmity, and all it buys is the pact, which
+   is worth nothing unless the colony also marches. The call needs to buy
+   something of its own: a say in the terms, a share of what is taken, the
+   ally's warriors owed in return.
+2. **Marching alone does nothing measurable.** The colony is rarely strong
+   enough to take a town by itself, which is true to the period and makes the
+   ally the point. Left as it is.
+3. **Both near nations hostile is still close to a lost game:** 13.0% to 17.8%,
+   against 40% to 50% with neither.
+4. **Not modelled:** the three beats (the model resolves a fight in one step,
+   always pressed), the captain's temper, escorts, blockhouses, hostages and
+   marriage as terms. These are for the engine and the content.
+
+## Still for the author
+
+1. The four nations' names, and what each pair's quarrel is about. Six feuds is
+   a lot of history; some pairs may simply have none.
+2. Whether a marriage as a term of peace is the governor's own, a child's, or a
+   follower's.
 
 ## History, as far as it shaped this
 

@@ -4,8 +4,10 @@ A governor's life on a new shore, and the wait for the next ship.
 
 Working title. Status: scaffolded 2026-11-22 (game-scaffold shape C, with the
 game-narrative story engine). What plays today is the kit's placeholder story,
-not this game. The design is `docs/SPEC.md`; the numbers model that has to pass
-before any screen is drawn is `prototypes/killgate/` (`docs/KILLGATE.md`).
+not this game. The design is `docs/SPEC.md`; the numbers model (`prototypes/killgate/`,
+`docs/KILLGATE.md`) passed at its third round; `docs/DESIGN.md` is the build
+proposal, waiting for the author, and `docs/FRAME-war.md` is how war sits beside
+trade and diplomacy.
 
 ## Play as an app
 

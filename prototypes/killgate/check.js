@@ -23,7 +23,7 @@ for (const [name, opt] of Object.entries(arms)) for (const seed of seeds) {
 }
 console.log(`ok  deterministic, ended, clock moved, numbers finite: ${runs} runs`);
 
-const parts = { 'order: today': { order: 'today' }, 'neighbours: raid': { neighbours: 'raid' }, 'neighbours: ignore': { neighbours: 'ignore' }, 'neighbours: partisan': { neighbours: 'partisan' }, 'partisan raids rival': { neighbours: 'partisan', raidRival: true }, 'refuses the call': { neighbours: 'partisan', answerCall: false }, 'expedition': { expedition: true }, 'partisan marches': { neighbours: 'partisan', expedition: true }, 'isolate': { neighbours: 'isolate' }, 'no watch': { noWatch: true },  'hunt: early': { hunt: 'early' }, 'hunt: always': { hunt: 'always' }, 'hunt: never': { hunt: 'never' },
+const parts = { 'order: today': { order: 'today' }, 'neighbours: raid': { neighbours: 'raid' }, 'neighbours: ignore': { neighbours: 'ignore' }, 'neighbours: partisan': { neighbours: 'partisan' }, 'partisan raids rival': { neighbours: 'partisan', raidRival: true }, 'refuses the call': { neighbours: 'partisan', answerCall: false }, 'expedition': { expedition: true }, 'partisan marches': { neighbours: 'partisan', expedition: true }, 'isolate': { neighbours: 'isolate' }, 'parley': { parley: true }, 'no watch': { noWatch: true },  'hunt: early': { hunt: 'early' }, 'hunt: always': { hunt: 'always' }, 'hunt: never': { hunt: 'never' },
   'share: false': { share: false }, 'deputy: false': { deputy: false }, 'ration: full': { ration: 'full' }, 'sellPowder': { sellPowder: true }, ...Object.fromEntries(Object.keys(SPLITS).map((k) => ['split: ' + k, { split: k }])) };
 const base = seeds.map((seed) => snap(play(seed, { policy: careful, fallback: careless })));
 let inert = 0;
