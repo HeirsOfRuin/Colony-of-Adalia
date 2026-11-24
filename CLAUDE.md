@@ -8,8 +8,10 @@
   and gates; skipping a stage is allowed, skipping it silently is not.
 - `docs/DESIGN.md` is the Phase 0 proposal and waits for the author's approval.
   Read it before touching `src/`. `docs/FRAME-war.md` is the accepted design of
-  war beside trade and diplomacy: four nations, six feuds, the watch, parley.
-  The nations are `n1`, `n2`, `f1`, `f2` until the canon sheet names them.
+  war beside trade and diplomacy: four nations, six feuds, the watch, the envoy,
+  two kinds of pact. `docs/FRAME-start.md` (codes, the house's story, landing
+  site) is not approved. The nations are `n1`, `n2`, `f1`, `f2` until the canon
+  sheet names them.
 - The stage this repo is at is written at the top of `docs/KILLGATE.md`. No
   screen is drawn and no scene is written until the author has read the kill
   gate and `docs/DESIGN.md` is approved.

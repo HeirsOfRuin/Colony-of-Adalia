@@ -1,12 +1,10 @@
 # Frame: war, beside trade and diplomacy
 
-Status: **accepted to be built and measured, 2026-11-23.** The author, shown
-this frame: "Go with recommendations and suggestions. Expand nations to 4
-total, 2 near and 2 a bit further". The rule, the three beats, parley, the
-hidden strength of a town and the captain's temper are accepted on that
-instruction. Nothing is on a screen. The numbers side has been through round 3
-of the kill gate (`docs/KILLGATE.md`); what is measured and what is still only
-designed is marked below.
+Status: **accepted to be built and measured, 2026-11-23; amended by the
+author's answers of 2026-11-24** (section 8, and quoted in `SPEC.md`). Nothing
+is on a screen. The numbers side is round 4 of the kill gate
+(`docs/KILLGATE.md`); what is measured and what is still only designed is
+marked below.
 
 ## The request
 
@@ -168,6 +166,66 @@ make a friend of by nursing. That choice should be offered in the same scene.
 grudge that fades at one part in a hundred a turn. A raid in year two is two
 thirds there in year twenty.
 
+### 8. The author's answers (2026-11-24): deeper diplomacy, pawns and equals, ties that pay
+
+> Make it possible to play the hostile nations off each other. Diplomacy should
+> be very deep and versatile, since war could be near catastrophe given the
+> limited resources. That's not to say don't make it useful, because some
+> players would love to replay Jamestown or others and fight off the natives
+> who swarm the palisade.
+
+> Allies should be useful pawns if handled right, like most colonizers viewed
+> them. Treating them as equals could be good to, but it won't likely lead to
+> you being top dog
+
+> Ties should buy easier trade, diplomacy, and support
+
+**The envoy: one errand a summer.** Diplomacy gets its own order beside the
+military one, so the two compete for the governor's attention, not his hands.
+
+| Errand | Costs | Does | Can go wrong | In the model |
+|---|---|---|---|---|
+| **Parley** | 8 goods | A truce with a nation at or near war, three years | Refused; likelier with a long grudge, less likely if a nation he trusts speaks for you | Yes |
+| **Incite** | 5 goods, or 2 kegs (which arm him) | Gifts and tales to one nation about another: their feud heats, and if it is hot enough they go at each other this summer. A nation at war with its neighbour is engaged for three turns: a third as likely at the colony's wall, and its men out of the colony's fields | Found out (about one time in seven): the nation talked about turns harder against the colony, and the one used resents it | Yes |
+| **Mediate** | 6 goods | Cools a feud between two nations that both like the colony; both credit it | Nothing, but it can cool a feud the colony needed hot | Yes |
+
+The envoy can approach a hostile nation (down to -75), so **two enemies can be
+set on each other**, which is the author's "play the hostile nations off each
+other". On the palisade shore that is the difference between 14.2% and 36.2%.
+
+**War stays near catastrophe and becomes useful.** Raiding for food wins 3.1%
+of lives and ends in the colony overrun 59% of the time. But a wall that throws
+back an attack with half as much again to spare is a **bloody repulse**: the
+attacker loses more, every other nation thinks better of the colony, and the
+Crown is pleased. The Jamestown game, holding the palisade, is the Crown's: its
+soldiers are cheap, its ships carry their victuals, and it rewards a flag kept
+flying. A Crown fortress under a soldier's background wins 43.9% on the
+palisade shore, the best of eight approaches there. A company fortress wins
+3.5%: soldiers are the company's dearest freight.
+
+**Two kinds of pact.**
+
+| | Equal | Client (a pawn) |
+|---|---|---|
+| His calls | Answered with men and powder; each answered call is a march he owes you at full strength | Answered with powder only: his war is your errand |
+| His warriors | Behind your wall; on your march against his own enemies, or any enemy when he owes you | On any march you send him on, in front. His dead are his |
+| What you take | Corn, plunder | Land: a carried march on a near nation with a client in front takes 18 land |
+| What it costs | Your men in his wars | A keg a summer to arm him, and his resentment (the tie falls 2.5 a summer). He sets on your enemies automatically |
+| How it ends | Rarely: 65% of pacts last to the end | Often: 47% last. A resentful client breaks it, armed with your powder |
+| Measured | 47.7% win; 146 land; the near nations 415 people | 36.8% win; **199 land; the near nations 338 people** |
+
+The author's "won't likely lead to you being top dog" is what the numbers say.
+The client is also what the governor's death undoes: his successor cannot hold
+a pawn the governor held by fear and powder. That is the trade.
+
+**What a tie buys.** Read through the tie above nothing, out of 100: furs half
+as good again from a friend at 100; land up to half price; a parley helped by
+the best word among the enemy's friends; an incitement that lands twice as
+hard on a nation that trusts the colony; corn in a hungry winter and a few
+warriors at the wall from any nation above 25, not only from an ally. Nursing
+the neighbours' sick, the deepest tie the SPEC names, no longer costs wins
+(+1.6 ±1.4, was -4.5).
+
 ## A worked example
 
 The figures are the model's own, from `defenceOf`, `strengthOf`, `forceOf`,
@@ -201,42 +259,40 @@ the wall will go.
 The march and the parley are one plan, in that order. That is the join between
 war and diplomacy the frame is after.
 
-## What the numbers say (round 3, 1,000 seeds an arm, ±1 SE)
+## What the numbers say (round 4, 1,000 seeds an arm, ±1 SE)
 
 | Question | Result |
 |---|---|
-| Is one way of dealing with the neighbours simply right? | No. Best on a seed: trade and parley 24%, take a side 21%, side and raid his enemies 18%, trade with all 15%, trade and sell powder 11%, keep apart 10%, raid 1% |
-| Is a pact worth having without marching? | No: 29.2 ±1.4% against 30.2 ±1.5% for trading with all |
-| Is marching with an ally worth it? | Yes: +9.1 ±1.6 points over a pact that never marches. It is the strongest single policy measured: 38.3 ±1.5% |
-| Is parley worth its goods? | Yes: +4.3 ±1.1 points, from about two parleys and one truce a life |
-| Does the watch matter? | Yes, since round 3: no watch costs 9.8 ±1.3 points |
-| Can a march be lost? | Yes, since round 3: 0.30 routs in 2.91 marches a life |
-| Is marching without an ally worth it? | Not measurably: +1.4 ±1.1 |
-| Does answering an ally's call pay? | No: 2.8 ±1.3 points *worse* than refusing |
+| Is one way of dealing with the neighbours simply right? | No. Best on a seed: play them off 32%, equal pact 20%, mediate 15%, parley 11%, client 11%, keep apart 7%, raid 4% |
+| Does the landing site change the right answer? | Yes. Sheltered: equal pact best (60.4%). Contested: play them off (45.4%). Palisade: a Crown fortress under a soldier (43.9%), then play them off (36.2%) |
+| Is playing them off worth it? | Yes: +13.7 ±1.8 points over no envoy; +22.0 ±1.7 on the palisade. 7.4 incitements a life, 1.1 found out, 5.3 fights set going |
+| Is a pawn worth more than an equal? | In land and in the neighbours' weakness, yes (199 land against 146; near nations 338 people against 415). In outlasting the governor, no: -10.9 ±1.6 points |
+| Is war a catastrophe? | Raiding for food: 3.1% wins, overrun 59%. Holding a wall: not if it is the Crown's |
+| Does the watch matter? | Yes (round 3: no watch costs 9.8 ±1.3 points; not re-measured alone in round 4) |
 
 ## Faults fixed since the outline
 
-1. **The expedition had no risk.** The governor's reckoning of a town is now
-   wrong by up to half until the country is ranged. Ranging has a military use.
-2. **The watch was nearly decoration.** Under a hostile neighbour with no watch
-   kept, the summer's work loses 35% and men are picked off at the plough.
-3. **A hostile neighbour had no way out.** Parley is in.
-4. **The nations could be fought to nothing.** A fight now cools the feud, and
-   a nation at half its strength makes peace.
+1. **The expedition had no risk.** The governor's reckoning of a town is wrong
+   by up to half until the country is ranged.
+2. **The watch was nearly decoration.** Under a hostile neighbour with no watch,
+   the summer's work loses 35% and men are picked off.
+3. **A hostile neighbour had no way out.** Parley, and now the envoy.
+4. **The nations could be fought to nothing.** A fight cools the feud; a nation
+   at half strength makes peace.
+5. **Answering an ally's call was the wrong choice** (round 3, -2.8). An
+   answered call is now a march owed. The equal pact that marches wins 47.7%,
+   the best single policy on a sheltered landing.
+6. **Playing nations off did nothing** (first try in round 4: the envoy waited
+   for goods a hostile-shore colony never has, about 2 in its first ten years,
+   because its careful governor gave them away as gifts to nations that would
+   not trade). Incitement can be paid in powder and can start a fight that
+   summer; the one who plays them off keeps his goods for the envoy.
 
 ## Faults still open
 
-1. **Answering an ally's call is the wrong choice by a little.** It costs
-   powder, men and another nation's enmity, and all it buys is the pact, which
-   is worth nothing unless the colony also marches. The call needs to buy
-   something of its own: a say in the terms, a share of what is taken, the
-   ally's warriors owed in return.
-2. **Marching alone does nothing measurable.** The colony is rarely strong
-   enough to take a town by itself, which is true to the period and makes the
-   ally the point. Left as it is.
-3. **Both near nations hostile is still close to a lost game:** 13.0% to 17.8%,
-   against 40% to 50% with neither.
-4. **Not modelled:** the three beats (the model resolves a fight in one step,
+1. **Both near nations hostile is still the hard start,** by the author's
+   choice now: a visible difficulty. The careful governor wins 14.2% there.
+2. **Not modelled:** the three beats (the model resolves a fight in one step,
    always pressed), the captain's temper, escorts, blockhouses, hostages and
    marriage as terms. These are for the engine and the content.
 

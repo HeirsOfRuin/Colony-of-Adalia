@@ -3,11 +3,13 @@
 Stage 3 of the workflow: stack, architecture, the turn, screens, scope and
 build plan. **For the author's approval before any game code.** Written
 2026-11-23 on the instruction "Go with recommendations and suggestions. Expand
-nations to 4 total, 2 near and 2 a bit further".
+nations to 4 total, 2 near and 2 a bit further"; amended 2026-11-24 with the
+author's answers to the five risks and on the start (section 1, and the SPEC's
+table).
 
 Inputs, in the order they win: `SPEC.md`'s decisions table, `KILLGATE.md`
-round 3 (the numbers), `FRAME-war.md` (war beside trade and diplomacy),
-`SPEC.md`'s text.
+round 4 (the numbers), `FRAME-war.md` (war beside trade and diplomacy),
+`FRAME-start.md` (codes, the house's story, background, site), `SPEC.md`'s text.
 
 Where a later "as built" section differs from the plan above it, the later
 section wins.
@@ -25,7 +27,15 @@ section wins.
 | War spends the colony's own hands, powder and goods; no separate army; three beats to a fight; parley | `FRAME-war.md`, accepted 2026-11-23 |
 | Phone first, installable, offline, no accounts, turn-based | All previous builds |
 | Vite + Preact + TypeScript (strict) + YAML content + Zod, with the Knight of Adalia story engine | SPEC's handoff; scaffolded 2026-11-22 |
-| The kill gate is passed at round 3 with five named risks | `KILLGATE.md` |
+| The first ten years are the crux and hang on the ships: an unknown land, a new route, a colony that may sail home | The author, 2026-11-24; `KILLGATE.md` round 4 |
+| The landing site is a visible choice of difficulty | The author, 2026-11-24; `FRAME-start.md` |
+| Diplomacy deep and versatile: the envoy (parley, incite, mediate); hostile nations can be played off each other | The author, 2026-11-24; `FRAME-war.md` section 8 |
+| War near catastrophe but useful; the palisade can be held | The author, 2026-11-24 |
+| Two kinds of pact: a client (pawn) makes you top dog, an equal does not | The author, 2026-11-24 |
+| A tie buys easier trade, diplomacy and support | The author, 2026-11-24 |
+| Four factions with grievances; one lever a winter (whom you hear) and a faction's demand; no sliders | The author, 2026-11-24: "real threats, but not to the point of micromanagement" |
+| A House of Adalia code is the preferred way in; a Knight of Adalia code works with forced quick choices for House of Adalia's story | The author, 2026-11-24; `FRAME-start.md` |
+| The kill gate at round 4: seven of the author's answers hold; claim 4 fails again (a fault in the bot's rule, not yet the game's) | `KILLGATE.md` |
 
 ## 2. What kind of game this is, in one paragraph
 
@@ -209,21 +219,42 @@ decision. A style tile and the first three scenes are the calibration round
 One constraint is known now: it must look nothing like Knight of Adalia, whose
 engine it shares.
 
-## 9. The dynasty code
+## 9. The start: codes, the house's story, background, site
 
-- **`KOAD1.` is read.** It is plain data with display names (the house's name,
-  the founder's station and renown, traits, wealth, the people he knew and what
-  they felt). Proposed mapping, to be measured as the SPEC's bonuses:
-  station and renown become standing with the backers; coin becomes credit
-  (the purse the letter spends); traits carry; people whose affection was
-  negative become enemies among the investors or at court.
-- **House of Adalia has no dynasty code.** Its ending offers its whole save as
-  `HOA1.`, 13,000 to 21,000 characters, shaped like that game's insides. Reading
-  it means depending on another game's save format. **Proposed: not in the
-  first playable.** The clean fix is a small export added to House of Adalia,
-  which is a decision about that game.
-- **Without a code:** four backgrounds give the same four things (standing,
-  credit, a trait, an enemy).
+Designed in `FRAME-start.md`, waiting for the author. In short:
+
+- **A House of Adalia code (`HOA1.`) is the preferred way in.** It is that
+  game's whole save; it can be read with Node's zlib alone (raw deflate,
+  base64url). Its ending, last head, money and debt, rival houses, church and
+  arms become the colony's standing, credit, enemies at home, backer and flag.
+  House of Adalia records no house name; the player names the house.
+- **A Knight of Adalia code (`KOAD1.`) works,** after six forced quick choices
+  that stand in for House of Adalia's story (opening, house law, plague, great
+  match, rising, war of cousins). It can reach every start but the very best.
+- **No code:** the four backgrounds. Measured: none is best everywhere.
+- **The landing site** is chosen in the open as the difficulty: sheltered,
+  contested, palisade (careful governor 53%, 35%, 14%), or "where the ship is
+  driven", at random.
+
+## 9a. The factions
+
+Gentlemen, labourers and servants, soldiers, families. Each has a grievance
+that rises from what happens to it, never from a slider, and settles by
+itself. The player's levers:
+
+- **Whom the governor hears each winter** (one faction, the colony as a whole,
+  his deputy, or his own health). That is the only routine faction control.
+- **A faction's demand**, when its grievance passes the line: a scene with a
+  stake (land, goods, powder), answered yes or no.
+- Everything else the governor does already moves them: pressing gentlemen to
+  dig, short rations, a breach, a fever, an empty magazine.
+
+A faction past the mutiny line and large enough may rise and remove him. The
+measured threat: a governor who hears no one and grants nothing ends in mutiny
+in 64.6% of lives; one who hears the angriest ends in mutiny in 6.7%, all of
+them after his death. The named followers each belong to a faction and give
+its grievance a face; the engine shows the faction's mood through them, not as
+a bar.
 
 ## 10. Scope: where this pushes back on the SPEC
 
@@ -233,22 +264,31 @@ engine it shares.
 | "About forty named settlers over three waves" | Twelve named at landing, each wave adding named people to a cap of forty. The eight places first; the rest have temper and faction but no trade bonus | The gate measured eight and they carry 18.8 points of win rate. Forty at once on a phone is a list, not a cast |
 | "The governorship: offices, council, petitions" carried over from House of Adalia | Designed here, in the feature loop, after the slice | It does not exist in House of Adalia's code (`KILLGATE.md`). The gate has no council and passes without one |
 | "No succession test yet" in the first playable | Kept out of the first playable, but the engine is built for the whole life | The win cannot be judged in ten years; the gate ran the whole life |
-| "The code read" in the first playable | `KOAD1.` only | Section 9 |
+| "The code read" in the first playable | `HOA1.`, `KOAD1.` with the forced choices, and the backgrounds: the author's preference (2026-11-24) | Section 9; `FRAME-start.md` |
+| "Two or three nations" with "their own leaders, rivalries" | Four, six feuds, and the envoy as a second summer order beside the military one | The author, 2026-11-23 and 2026-11-24 |
 
 ## 11. Risks carried from the kill gate
 
-Each with its number (round 3, 1,000 seeds an arm, ±1 SE) and what the design
-does about it. None is tuned away.
+Round 3's five risks, and what the author's answers of 2026-11-24 made of them
+(round 4, 1,000 seeds an arm, ±1 SE):
 
-| # | Risk | Number | What the design does |
+| # | Round 3 risk | The author | Round 4 |
 |---|---|---|---|
-| R1 | A late ship barely matters in the first ten years, which is the first playable | 4.1 ±0.8 points at ten years; 35.9 ±1.7 over a life | The ship carries what cannot be stockpiled: named people, letters, the verdict. Measured again when followers are in |
-| R2 | Both near nations hostile on landing is close to a lost game, 15% of starts | 13.0% to 17.8% wins, against 40% to 50% | The start shows the tempers before the charter is chosen. Whether this is a hard start the player picks or a fault to tune is **for the author** (section 14) |
-| R3 | Answering an ally's call is slightly the wrong choice | -2.8 ±1.3 points | The call must buy something of its own: a say in the terms, warriors owed in return. A frame before it is built |
-| R4 | Nursing the neighbours' sick costs wins | -4.5 ±1.4 points; ties +13.9 | The tie has to buy what the SPEC says it buys: a healer, corn in a famine, a marriage. A frame before it is built |
-| R5 | Mutiny ends a third of careful lives and morale is one number | 33% in office or after | Factions among named followers replace the one number. This is the largest piece of design not yet done |
-| | One fixed split of hands is the best fixed split on half of seeds | 54% | Accepted: a thinking governor beats it by 11 points |
-| | 114 people starve in a careful life | | The cost arrives through the named. Watched in playtest, not tuned |
+| R1 | A late ship barely mattered in the first ten years | "the first 10 years should be the most crucial and just reliant on ships" | **Closed.** Perfect ships: +12.6 ±1.6 alive at ten years, and 83 people there against 45. 44% of all losses fall in the first ten years |
+| R2 | Both near nations hostile was nearly a lost game | "a visible choice, a good way to control difficulty" | **Closed by design.** The palisade shore is chosen openly: 14.2% careful, 36.2% playing them off, 43.9% a Crown fortress under a soldier |
+| R3 | Answering an ally's call was the wrong choice | "Allies should be useful pawns if handled right" | **Closed.** Equal and client pacts. The client takes land (199 against 146) and weakens the neighbours, and wins 10.9 points less: he turns when the governor dies |
+| R4 | Nursing the sick cost wins | "Ties should buy easier trade, diplomacy, and support" | **Closed.** +1.6 ±1.4 `~` (was -4.5) |
+| R5 | Mutiny was a third of lives, from one number | "real threats, but not to the point of micromanagement" | **Closed.** Four factions; ignoring them: 64.6% mutiny; hearing them: 6.7% |
+
+Open after round 4 (detail in `KILLGATE.md`):
+
+| | Fault | Number | What the design does |
+|---|---|---|---|
+| A | A fixed 60% of hands on food beats the careful rule | 46.2% against 41.4% | The bot's cargo rule is at fault (a wider food margin made it worse). Give it a cargo floor and measure again before blaming the jobs |
+| B | The win is a little easy | 41.4% against a third | Left until A is settled |
+| C | The gentlemen never rise | Every mutiny measured is the labourers' | Their grievance needs teeth: idle and not rich is not enough |
+| D | Granting a demand is worth little | +0.8 ±0.5 `~` | Revisit when the demand scenes are framed |
+| E | The soldier's background is weak except where it fits | 34.1% company, 43.9% palisade fortress | Check with the fortress in more places |
 
 ## 12. Instruments
 
@@ -284,12 +324,11 @@ scene, and the canon sheet.
 
 1. **Approve this, or mark what is wrong.** Phase 1 is the port and touches no
    words and no look, so it can start on a yes to sections 3 to 5.
-2. **The hostile start (R2).** A start the player can see and choose, or a
-   fault to tune out?
+2. **`FRAME-start.md`'s four questions:** the house's name (House of Adalia
+   has none), the six forced choices, an extinct house's code, the random site.
 3. **The canon sheet.** Four nations, six possible feuds, a coast. Nothing is
    named until it exists; Phase 4 cannot start without it.
 4. **A title.**
-5. **House of Adalia's code (section 9).** Leave it out of the first playable?
 
 ## 15. Decisions log
 
@@ -298,6 +337,7 @@ decisions in full.
 
 | Date | Decision |
 |---|---|
+| 2026-11-24 | The author's answers to the five risks and on the start, quoted in the SPEC's table. Built into the gate as round 4 and into this document (sections 1, 9, 9a, 10, 11) and `FRAME-start.md`. Measured: 67,000 runs, careful 41.4 ±1.6%, careless 0.3 ±0.2% |
 | 2026-11-23 | Design proposal written; four nations; the war frame accepted. "Go with recommendations and suggestions. Expand nations to 4 total, 2 near and 2 a bit further". Measured: kill gate round 3, 30,000 runs, careful 30.2 ±1.5%, careless 1.7 ±0.4% |
 | 2026-11-23 | Politics, a named cast and war into the gate. "Go with recommendations, also outline how military actions and play out will work along the other systems of trade and diplomacy". Measured: round 2, 29,000 runs |
 | 2026-11-22 | Scaffolded (shape C, the story engine); kill gate round 1, 20,000 runs: two claims failed |

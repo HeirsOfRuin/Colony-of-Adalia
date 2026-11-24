@@ -38,21 +38,25 @@ export const D = {
   sails:  { company: (f) => Math.min(0.97, 0.55 + 0.0045 * f), crown: (f) => 0.72 + 0.002 * f },
   pushSettlers: { company: (year) => (year >= 4 ? 3 + 0.3 * year : 0), crown: () => 0 },   // labourers sent unasked: the later waves
   price: {
-    company: { spec: 4, powder: 2.0, iron: 1.0, salt: 0.5, goods: 0.6, food: 0.2, lab: 1.0, craft: 2.2, sold: 3.0, fam: 1.5 },
-    crown:   { spec: 4, powder: 1.1, iron: 1.0, salt: 0.5, goods: 0.9, food: 0.2, lab: 1.7, craft: 2.6, sold: 1.3, fam: 2.2 },
+    company: { spec: 4, powder: 2.0, iron: 1.0, salt: 0.5, goods: 0.6, food: 0.35, lab: 1.0, craft: 2.2, sold: 3.0, fam: 1.5 },
+    crown:   { spec: 4, powder: 1.1, iron: 1.0, salt: 0.5, goods: 0.9, food: 0.35, lab: 1.7, craft: 2.6, sold: 1.3, fam: 2.2 },
   },
   standard: {                // what the backers load when no letter reached them (shares of the budget)
     company: { lab: 0.45, goods: 0.15, food: 0.15, powder: 0.10, iron: 0.08, salt: 0.07 },
     crown:   { sold: 0.35, powder: 0.25, food: 0.15, lab: 0.12, iron: 0.08, salt: 0.05 },
   },
+  crownVictuals: 3,          // rations a Crown ship carries for each soldier already in the garrison: the King feeds his men
   craftFound: 0.6,           // "ask for carpenters and you get what the backers could find"
   gentPerShip: { company: 0.12, crown: 0.05 },   // gentlemen who come unasked, share of the settlers sent
   seasoning: 0.10,           // newcomers dead in their first season
   graveyard: 3, graveyardMax: 0.8,   // settlers who will not sail: share lost per share of the colony that died last year
 
   // the backers
-  companyWants: (year, pop) => 0.50 * pop * (1 + 0.04 * year) * Math.min(1, (year + 1) / 4),   // cargo a year; the first years are forgiven
-  companySwing: 16, companyNoShip: -4, crownCargoWeight: 0.3, courtSd: 5, courtDrift: -2, flagBonus: 3,
+  // cargo a year. The first seven years are forgiven on a rising scale, and so is the verdict on
+  // them: in year one an empty hold costs an eighth of what it costs in year eight (round 4)
+  patience: (year) => Math.min(1, (year + 1) / 8),
+  companyWants: (year, pop) => 0.35 * pop * (1 + 0.03 * year) * D.patience(year),
+  companySwing: 16, companyNoShip: -4, crownCargoWeight: 0.3, courtSd: 4, courtDrift: 0.5, flagBonus: 3,
   recallBelow: 12, recallStrikes: 2,
 
   // the nations
@@ -113,6 +117,71 @@ export const D = {
   moraleRest: 55, moralePull: 0.08, mutinyBelow: 20, mutiny: 0.15, desertBelow: 35, desert: 0.03,
   abandonBelow: 25, deathMorale: 60,   // morale lost per share of the colony that dies, of anything
   m: { ship: 8, noShip: -8, short: -7, starve: -15, breach: -12, repulse: 4, press: -2, attend: 5, fever: -4 },
+
+  // ---- round 4: the author's answers of 2026-11-24 (docs/SPEC.md decisions) ----------------
+  // 1. "the first 10 years should be the most crucial and just reliant on ships": the colony
+  //    does not know this land. Its harvest starts at under half of what the same hands will
+  //    grow once the soil, the seed and the seasons are learned, by years or by ranging.
+  know0: 0.35, knowYear: 0.065, knowRange: 0.25,
+  //    and the crossing is new: in the first years more ships are short or lost, falling
+  //    to the settled rate by year ten as the masters learn the route
+  newRoute: 1.6, routeYears: 10,
+  //    and the first ship after a starving year may take them home: the chance is this many
+  //    times the share of the colony that died in the year before, past a hard year's share
+  //    (Jamestown, 1610)
+  //    Only while the place is not yet home: the chance falls to nothing by year twelve.
+  abandonDied: 1.5, hardYear: 0.2, homeBy: 12,
+  // 2. "a visible choice, a good way to control difficulty": where the ship puts in. Each site
+  //    fixes the two near nations' temper on landing; the far two are drawn as before.
+  sites: {
+    sheltered: [[0, 35], [0, 35]],
+    contested: [[-50, -20], [-10, 35]],
+    palisade:  [[-60, -30], [-60, -30]],   // the Jamestown shore: both neighbours hostile from the first summer
+  },
+  //    "Make it possible to play the hostile nations off each other": the envoy, one errand a
+  //    summer. Incite: gifts and tales to one nation about another. Mediate: the reverse.
+  //    Paid in goods, or in powder, which a nation at war wants more than anything. A tale well
+  //    told sets the fight going this summer, as likely as their feud is hot.
+  inciteGoods: 5, inciteKegs: 2, inciteHeat: 22, inciteAbove: -75, inciteFound: 0.18, inciteFoundTie: -25, inciteFoundGrudge: 10, inciteUsed: -6,
+  mediateGoods: 6, mediateCool: 20, mediateTie: 4,
+  busyFight: 0.3, engagedTurns: 3,   // a nation that fought another is engaged for three turns: it comes to the colony's wall
+                             // that much as often, and its men are not in the colony's fields
+  //    War useful, if near catastrophe: a bloody repulse is heard of up and down the coast.
+  bloodyRepulse: 1.5, repulseLoss: 0.07, respect: 3, beatenHeat: 0.4, repulseFavour: { crown: 3, company: 0 },
+  // 3. "Allies should be useful pawns if handled right … Treating them as equals could be good
+  //    to, but it won't likely lead to you being top dog". Two kinds of pact.
+  //    Equal: answer his calls, and he owes you a march at full strength for each.
+  //    Client: arm him, set him on your enemies, march him in front; he resents it.
+  owedMarch: 1.0,
+  clientKegs: 1, clientHeat: 12, clientMarch: 0.8, clientLoss: 0.05, clientResent: 2.5, clientWarriorGrudge: 4,
+  takeLand: 18,              // land a carried march on a near nation takes, with a client in front
+  // 4. "Ties should buy easier trade, diplomacy, and support". Read through tieGood(n) =
+  //    the tie above nothing, as a share of 100.
+  tieFurs: 0.5, tieParley: 0.3, tieIncite: 1.0, tieLand: 0.5,
+  supportAbove: 25, supportCorn: 0.25, supportHelp: 0.2,
+  // 5. "Morale and internal factions should be real threats, but not to the point of
+  //    micromanagement". Four factions, each with a grievance that rises from what happens to
+  //    it, not from sliders. The governor has one lever a winter (whom he hears) and answers
+  //    a faction's demand when it comes.
+  factions: ['gent', 'lab', 'sold', 'fam'],
+  griev: { decay: 0.12, base: 15,
+    gent: { press: 9, noProfit: 3, idle: 2, granted: -25 },   // idle: they came to get rich, every turn they are not
+    lab: { hunger: 10, short: 4, deaths: 60, overwork: 4, landless: 4, granted: -25 },
+    sold: { noPowder: 10, killed: 50, unpaid: 3, repulse: -8, granted: -25 },
+    fam: { fever: 6, breach: 14, deaths: 40, minister: -3, granted: -25 } },
+  heard: 18, heardAll: 5,    // grievance a winter's hearing takes from one faction, or from all
+  demandAt: 50, demandEvery: 4, refused: 12,
+  concede: { gent: { goods: 6, land: 6 }, lab: { land: 10, food: 0 }, sold: { goods: 5, powder: 2 }, fam: { goods: 4 } },
+  mutinyAt: 70, mutinyWeight: 0.15, mutinyChance: 0.35,   // a faction this aggrieved, this large, may rise
+  // Backgrounds: the quick start, standing in for a dynasty code. "Heavily influenced added
+  // bonuses"; the gate checks that none of them is simply best.
+  backgrounds: {
+    none:     {},
+    oldHouse: { favour: 20, budget: 0.9 },    // standing, little money: the court listens
+    merchant: { favour: -5, budget: 1.2 },    // credit, no name
+    soldier:  { favour: -10, sold: 8, drill: 0.5 },   // the men follow you, the backers do not
+    disgrace: { favour: -15, goods: 8 },      // sent here to be forgotten: the hard start
+  },
 
   // the governor
   hazard: (t) => 0.002 + 0.0005 * t, hazardHunger: 0.012, healthCut: 0.5,

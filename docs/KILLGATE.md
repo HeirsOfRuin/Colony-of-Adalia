@@ -1,23 +1,217 @@
 # Kill gate: results
 
-**Where the build is (2026-11-23):** Stage 2 of the game-building workflow is
-done at round 3, and Stage 3 has started: `docs/DESIGN.md` is written and waits
-for the author's approval. The repo is scaffolded (Stage 4's instruments exist,
-with the kit's placeholder story in them). No screen is drawn and no scene is
-written.
+**Where the build is (2026-11-24):** Stage 2 of the game-building workflow,
+round 4: the author's answers to the five risks are built into the model and
+measured. `docs/DESIGN.md` (Stage 3) is updated to match and still waits for
+the author's yes. The repo is scaffolded (Stage 4's instruments exist, with the
+kit's placeholder story in them). No screen is drawn and no scene is written.
 
-The kill gate is a numbers-only model of one governor's colony: ships, hands,
-food, powder, four nations and their feuds, war and parley, sickness, eight
-named settlers, the backers, the governor's death and the ten years after it.
-No names of places or peoples, no prose, no UI. It answers the question
-`SPEC.md` set: are the decisions interesting as a table of numbers, and do the
-eight claims under "Proof before screens" hold?
+The kill gate is a numbers-only model of one governor's colony: ships on a new
+route, a land not yet known, hands, food, powder, four nations and their
+feuds, the envoy, war, two kinds of pact, sickness, four factions, eight named
+settlers, the backers, the governor's death and the ten years after it. No
+names of places or peoples, no prose, no UI.
 
-Round 3 is the current model and the current verdict; `npm run gate` reproduces
-it. Rounds 2 and 1 are kept below as the record of how it got here, and their
-tables are from the model as it was then.
+Round 4 is the current model and the current verdict; `npm run gate`
+reproduces it exactly (run twice, byte-identical). Rounds 3, 2 and 1 are kept
+below as the record, and their tables are from the model as it was then.
+
+## Round 4 (2026-11-24): the author's answers, measured
+
+The author, shown round 3 and the design proposal:
+
+> 1. the first 10 years should be the most crucial and just reliant on ships.
+> 2. a visible choice, a good way to control difficulty. Also, Make it possible to play the hostile nations off each other. Diplomacy should be very deep and versatile, since war could be near catastrophe given the limited resources. That's not to say don't make it useful, because some players would love to replay Jamestown or others and fight off the natives who swarm the palisade.
+> 3. Allies should be useful pawns if handled right, like most colonizers viewed them. Treating them as equals could be good to, but it won't likely lead to you being top dog
+> 4. Ties should buy easier trade, diplomacy, and support
+> 5. Morale and internal factions should be real threats, but not to the point of micromanagement
+
+67 arms × 1,000 seeds = **67,000 runs**, every arm on the same seeds, ±1 SE.
+Paired gaps count as real past twice their error; `~` marks one that does not.
+
+### Verdict
+
+| Answer | Held? | The number |
+|---|---|---|
+| 1. The first ten years are the crux, and they hang on ships | **Yes** | Perfect ships keep the colony alive at year ten 12.6 ±1.6 points more often (was 4.1) and nearly double its people there (83 against 45). 44% of all careful losses happen inside the first ten years, most by sailing home after a starving winter |
+| 2a. The landing site is a visible difficulty | **Yes** | Careful governor: sheltered 53.2%, contested 35.3%, palisade 14.2% |
+| 2b. Hostile nations can be played off each other | **Yes** | On the palisade shore, playing them off wins 36.2% against the careful 14.2% (+22.0 ±1.7). Overall the envoy's play-off is worth +13.7 ±1.8 |
+| 2c. War near catastrophe, but useful; the palisade can be held | **Yes, under the Crown** | Raiding for food: 3.1%, overrun 59% of the time. On the palisade a Crown fortress with a soldier's background wins 43.9%, the best of eight approaches there. A company fortress wins 3.5%: soldiers are the company's dearest freight |
+| 3. Pawns make you top dog; equals do not | **Yes, at a price** | A client pact takes 56 land a life and leaves the near nations a fifth smaller (338 people against 415); its colonies hold 199 land against 146. It wins 10.9 ±1.6 points less often than an equal pact: a client turns on a colony whose governor has died |
+| 4. Ties buy trade, diplomacy and support | **Yes** | Nursing the neighbours' sick no longer costs wins (+1.6 ±1.4 `~`, was -4.5). It still improves ties by 8.5 |
+| 5. Factions are a real threat, without micromanagement | **Yes** | A governor who hears no faction and grants nothing: 64.6% end in mutiny, wins 7.4%. The careful one, with one lever a winter: 6.7% mutiny, all after his death |
+
+The eight claims of the SPEC:
+
+| # | Claim | Round 4 | The number |
+|---|---|---|---|
+| 1 | The wait is the game | **Holds** | Perfect ships over real: +12.6 at ten years, +36.6 ±1.9 in wins. Ordering ahead over ordering for today: +39.8 ±1.6 in wins |
+| 2 | Powder is a clock | **Holds** | Hunting every winter: 104 starved a life against 137, breaches 0.46 against 0.37, and wins 31.0% against 41.4% |
+| 3 | The neighbours are not a hazard table | **Holds** | Best on a seed: play them off 32%, equal pact 20%, mediate 15%, parley 11%, client 11%, keep apart 7%, raid 4% |
+| 4 | No best job | **Fails again** | A fixed 60% on food wins 46.2% against the careful rule's 41.4%, and is the best fixed split on 58% of seeds. See fault A below |
+| 5 | The middle is not dead | Holds, by the proxy | Years ten to twenty: 6.2% of turns with nothing pressing |
+| 6 | Winning is reachable and uncommon | **Holds, a little easy** | Careful 41.4 ±1.6% (target a third); careless 0.3 ±0.2% |
+| 7 | Crown and company both worth choosing | **Holds** | Crown 47.4%, company 41.4% (+6.0 ±2.0). Each is best on half the seeds |
+| 8 | Sickness both ways, ends nobody | **Holds** | Smallest any nation ever got: 86 people. Sharing cures: ties +8.5 ±0.4 |
+
+### What changed in the model, answer by answer
+
+**1. An unknown land on a new route.** The harvest starts at 35% of what the
+same hands will grow once the land is known; ranging and the years teach it
+(full by about year ten). Ships on the new route are lost or come short at 2.6
+times the settled rate in year one, falling to the settled rate by year ten;
+lateness is the backers' own and does not change. Food is dearer in the hold
+(0.35 a ration, was 0.2), so a second year of stores is not cheap insurance.
+And after a year in which more than a fifth of the colony died, the next ship
+may take them home (Jamestown, 1610); the chance fades to nothing by year
+twelve. The backers' expectations and their verdict both rise over the first
+eight years: in year one an empty hold costs an eighth of what it costs in
+year eight.
+
+**2. Sites, the envoy, and war.** Three landing sites fix the two near nations'
+temper: sheltered (both friendly), contested (one hostile), palisade (both
+hostile). One envoy errand a summer: parley, mediate a feud, or **incite** one
+nation against another, paid in goods or in powder, with a chance of being
+found out. An incitement told well sets the fight going that summer, and a
+nation at war with its neighbour is engaged for three turns: it comes to the
+colony's wall a third as often and its men are not in the colony's fields. A
+wall that throws back an attack with half as much again to spare is a bloody
+repulse: the attacker loses more, every other nation thinks better of the
+colony, and the Crown is pleased.
+
+**3. Two kinds of pact.** *Equal*: answer his calls, and each call answered is
+a march he owes the colony at full strength. *Client*: arm him (a keg a
+summer), set him on the colony's enemies, march him in front. His dead are his;
+the land taken from a near nation is the colony's. He resents it, and a
+resentful client breaks the pact.
+
+**4. What a tie buys,** read as the tie above nothing out of 100: better furs
+for the same goods, cheaper land, a better word at a parley with his friends,
+an incitement that lands harder, corn in a hungry winter and a few warriors at
+the wall from any friend above 25, not only from an ally.
+
+**5. Four factions.** Gentlemen, labourers and servants, soldiers, families.
+Each has a grievance that rises from what happens to it (pressed to dig; idle
+and not rich; hungry; burying its own; overworked on walls and watch; landless;
+short of powder; unpaid; sick; breached) and settles at an eighth a turn. The
+governor has one lever a winter: whom he hears. A faction past 50 comes with a
+demand (land, goods, powder) and is answered yes or no. A faction past 70 that
+is at least 15% of the colony may rise. Morale is still kept, and still sends a
+starving colony home.
+
+**Also:** the Crown's ships carry victuals for its soldiers (the King feeds his
+men), and its court no longer drifts against the governor; the Crown expects a
+wall that rises from nothing at landing to five feet by year twelve. Backgrounds
+(old house, merchant's heir, soldier, disgraced) are in the model.
+
+### Round 4 tables
+
+Endings are % of runs; `+` means after the governor's death.
+
+**The first ten years**
+
+| | Alive at year ten | Win | People at year ten | Endings |
+|---|---|---|---|---|
+| Careful, real ships | 74.0 ±1.4 | 41.4 ±1.6 | 45 | stands 41, abandoned+ 19, abandoned 15, recalled 9, mutiny+ 7 |
+| Careful, perfect ships | 86.6 ±1.1 | 78.0 ±1.3 | 83 | stands 78, abandoned+ 11, abandoned 7 |
+| Orders for today | 67.9 ±1.5 | 1.6 ±0.4 | | recalled 53, abandoned 18 |
+
+Of 586 careful lives lost, 44.4 ±2.1% were lost inside the first ten years:
+abandoned 59% of those, abandoned after an early death 25%, starved 9%,
+overrun 3%.
+
+**Landing sites** (win %)
+
+| Approach | Sheltered | Contested | Palisade |
+|---|---|---|---|
+| Careful (trade, parley) | 53.2 ±1.6 | 35.3 ±1.5 | 14.2 ±1.1 |
+| Play them off | 56.6 ±1.6 | **45.4 ±1.6** | 36.2 ±1.5 |
+| Equal pact and march | **60.4 ±1.5** | 44.6 ±1.6 | 24.3 ±1.4 |
+| Client pact and march | 45.2 ±1.6 | 32.3 ±1.5 | 21.3 ±1.3 |
+| Fortress, company | 41.5 ±1.6 | 21.2 ±1.3 | 3.5 ±0.6 |
+| Fortress, Crown | 46.4 ±1.6 | 28.0 ±1.4 | 17.2 ±1.2 |
+| Fortress, Crown, a soldier's background | 49.5 ±1.6 | 39.1 ±1.5 | **43.9 ±1.6** |
+| Keep apart | 24.8 ±1.4 | 19.8 ±1.3 | 11.6 ±1.0 |
+
+Best on a seed, palisade: Crown soldier's fortress 32%, play them off 30%,
+equal pact 10%, client 9%. Sheltered: play them off 24%, equal pact 21%,
+careful 15%, Crown soldier's fortress 14%. The site changes which approach is
+right, which is what a difficulty choice should do.
+
+**The envoy**
+
+| | Win | Incitements a life (found out; fights set going) | Parleys (truces) |
+|---|---|---|---|
+| No envoy | 39.3 ±1.5 | | |
+| Parley (careful) | 41.4 ±1.6 | | 1.4 (0.63) |
+| Play them off | 53.0 ±1.6 | 7.4 (1.06; 5.30) | 3.8 (1.68) |
+| Mediate | 42.4 ±1.6 | | 1.8 (0.80) |
+
+Over no envoy: parley +2.1 ±1.2 `~`, play them off **+13.7 ±1.8**, mediate +3.1 ±1.4.
+
+**Pacts**
+
+| | Win | Land held (colonies that stand) | Their people | Near nations' people | Land taken a life | Pact kept to the end |
+|---|---|---|---|---|---|---|
+| Trade, no pact | 41.4 ±1.6 | 162 | 103 | 454 | 0 | |
+| Equal pact, march | 47.7 ±1.6 | 146 | 110 | 415 | 0 | 64.6% |
+| Client pact, march | 36.8 ±1.5 | **199** | 95 | **338** | 56 | 46.7% |
+
+**Factions**
+
+| | Win | Mutiny (in office) | Demands a life, granted |
+|---|---|---|---|
+| Hears the most aggrieved (careful) | 41.4 ±1.6 | 6.7% (0.0%) | 1.6, 0.5 |
+| Hears the colony as a whole | 39.7 ±1.5 | 10.1% (0.3%) | 2.1, 0.7 |
+| Never grants a demand | 40.6 ±1.6 | 7.3% (0.0%) | 1.7, 0 |
+| Hears no one, grants nothing | 7.4 ±0.8 | **64.6% (52.9%)** | 5.0, 0 |
+
+Every mutiny but three in all four rows was the labourers and servants.
+
+**Starts** (careful, win %)
+
+| | None | Old house | Merchant's heir | Soldier | Disgraced |
+|---|---|---|---|---|---|
+| Company | 41.4 | 47.1 | **47.7** | 34.1 | 37.0 |
+| Crown | 47.4 | **60.6** | 51.1 | 45.4 | 33.7 |
+| Palisade | 14.2 | 19.7 | **21.5** | 9.8 | 11.3 |
+
+With the Crown's fortress on the palisade, the soldier's background is the
+best start measured (43.9%).
+
+### Faults open after round 4
+
+**A. Claim 4 fails again.** A fixed 60% of hands on food wins 46.2% against
+the careful rule's 41.4%. It is not the food: a wider food margin in the
+careful rule made it *worse* (34% at 300 seeds; more recalls). The fixed split
+keeps 15% of hands on cargo every year, so it is almost never recalled (1%),
+while the careful rule starves cargo whenever food is short and is recalled 9%
+of the time. The fault is the careful rule's cargo, not the game's jobs; the
+next round should give it a floor on cargo and measure again before calling
+the jobs unbalanced.
+
+**B. The win is a little easy:** 41.4% against a target of a third. Left alone
+until A is settled, since A moves it.
+
+**C. The gentlemen never rise.** Every mutiny measured is the labourers'. The
+spec's gentlemen who will not dig are a grievance with no teeth yet.
+
+**D. Granting demands is worth little** (+0.8 ±0.5 `~`): hearing a faction does
+almost all the work. The demand is a scene with a stake; its numbers want
+another look when the scenes are framed.
+
+**E. The soldier's and disgraced backgrounds are the weak starts** except where
+they fit (the soldier on the palisade under the Crown). That is probably right
+for "disgraced"; for the soldier it should be checked again with the fortress
+in more places.
+
+**F. Claim 5 is still a proxy,** and the first ten years now have almost no
+quiet turns (1.5%). That fits the author's answer 1.
 
 ## Round 3: the gate is passed, with five named risks
+
+*The record of the third round. Superseded by round 4 above.*
+
 
 The author, shown round 2: "Go with recommendations and suggestions. Expand
 nations to 4 total, 2 near and 2 a bit further". Read as: start the design
@@ -648,6 +842,8 @@ numbers gate cannot judge: named settlers and their factions, marriage, the
 governor's family, a third nation, the dynasty code. None of those is tested.
 
 ## What was read in House of Adalia
+
+*Updated 2026-11-24: the author prefers a House of Adalia code as the way in. How `HOA1.` is read, and what it becomes, is in `docs/FRAME-start.md`. The facts below are from round 1.*
 
 `SPEC.md` asked for this before the design. Read on branch
 `ccr-a949bd8d-5d4llu` of the Knight of Adalia repo, `games/house`.
