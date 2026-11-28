@@ -45,6 +45,12 @@ function adaptive(v, o) {
   let left = 1; const take = (x) => { const y = Math.max(0, Math.min(left, x)); left -= y; return y; };
   const need = Math.max(0, v.pop * 2 * 1.15 - Math.max(0, v.food - v.pop));   // the summer is eaten before the harvest
   // men under arms first where a neighbour is hostile: without them the field hands lose a quarter of the summer
+  // a floor of hands on the backers' cargo, every year whatever else is short (round 4, fault A:
+  // without it the rule starved the cargo whenever food was short, was recalled 9% of the time,
+  // and a fixed 60% on food with 15% on cargo beat it, 46.2% to 41.4%)
+  // The Crown's backers barely weigh cargo, so its governor keeps no floor (at a tenth, the Crown won
+  // 31.5% against 44.5% with none, 400 seeds).
+  const floor = take(o.cargoFloor ?? (v.charter === 'company' ? 0.1 : 0));
   const watch = take(o.noWatch ? 0 : v.hostile ? v.watchNeed * (o.fortress ? 1.5 : 1) : o.neighbours === 'isolate' || o.fortress ? 0.06 : 0.02);
   const food = take(Math.min(0.85, need / Math.max(1, v.hands * v.foodPerHand)));
   // walls to stand off the worst neighbour as he is today, with a third to spare; cargo
@@ -55,7 +61,7 @@ function adaptive(v, o) {
   const cargoFirst = v.charter === 'company' && v.favour < 50;
   let walls = cargoFirst ? 0 : wallShare();
   const cargoNeed = Math.max(0, (v.wants - v.cargo) * (v.charter === 'crown' ? 0.6 : 1.15));
-  const cargo = take(Math.min(0.5, cargoNeed / Math.max(1, v.hands * v.cargoPerHand)));
+  const cargo = floor + take(Math.min(0.5, cargoNeed / Math.max(1, v.hands * v.cargoPerHand)) - floor);
   if (cargoFirst) walls = wallShare();
   const range = take(v.range < 1 ? Math.min(0.08, left * 0.4) : 0);
   return { food, walls, cargo, build: left, range, watch };
