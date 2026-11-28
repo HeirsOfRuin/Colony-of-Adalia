@@ -1,7 +1,9 @@
-# Colony of Adalia (working title): Phase 0 design proposal
+# Colony of Adalia: design
 
 Stage 3 of the workflow: stack, architecture, the turn, screens, scope and
-build plan. **For the author's approval before any game code.** Written
+build plan. **Approved 2026-11-28.** The author: "Go ahead with your
+recommendations. Colony of Adalia keeps it tied to the trilogy". Phase 1 is
+built: section 16. Written
 2026-11-23 on the instruction "Go with recommendations and suggestions. Expand
 nations to 4 total, 2 near and 2 a bit further"; amended 2026-11-24 with the
 author's answers to the five risks and on the start (section 1, and the SPEC's
@@ -307,7 +309,7 @@ Open after round 4 (detail in `KILLGATE.md`):
 
 | Phase | Delivers | Exit |
 |---|---|---|
-| **1. The engine port** | `src/game/colony/` in TypeScript from the gate model; numbers in YAML; the bot and `check` ported; saves | The port reproduces round 3's tables within their error on the same seeds. The prototype is then retired |
+| **1. The engine port** (done, section 16) | `src/game/colony/` in TypeScript from the gate model; numbers in YAML; the bot and `check` ported; saves | The port reproduces the gate's tables on the same seeds (round 4b, as it turned out: the gate had two more rounds before the port). The prototype is then retired |
 | **2. The desks** | The screens of section 7 with placeholder words, no art | The bot and a person can each play a whole life on a phone; smoke clean |
 | **3. Calibration** | A style tile; three scenes at full polish (a ship, a fever, a parley); one fight in three beats; the letter screen | The author's verdict on voice, look, density, option count |
 | **4. The slice** | Landing to the end of year three, written: two near nations, twelve named followers, the first ship that does not come | The author plays it and wants year four |
@@ -322,13 +324,10 @@ scene, and the canon sheet.
 
 ## 14. For the author
 
-1. **Approve this, or mark what is wrong.** Phase 1 is the port and touches no
-   words and no look, so it can start on a yes to sections 3 to 5.
-2. **`FRAME-start.md`'s four questions:** the house's name (House of Adalia
-   has none), the six forced choices, an extinct house's code, the random site.
-3. **The canon sheet.** Four nations, six possible feuds, a coast. Nothing is
-   named until it exists; Phase 4 cannot start without it.
-4. **A title.**
+1. **The canon sheet.** Four nations, six possible feuds, a coast. Nothing is
+   named until it exists; Phase 4 cannot start without it. Phases 2 and 3 can.
+2. **Phase 2 next**, the desks: the screens of section 7 with placeholder
+   words and no art, joined to the story engine. No question blocks it.
 
 ## 15. Decisions log
 
@@ -337,7 +336,57 @@ decisions in full.
 
 | Date | Decision |
 |---|---|
+| 2026-11-28 | Approved; the title is *Colony of Adalia*. "Go ahead with your recommendations. Colony of Adalia keeps it tied to the trilogy". The recommendations: the cargo floor (round 4b), difficulty by site, `FRAME-start.md`'s answers, Phase 1. Phase 1 built: the port plays the same 5,000 of 5,000 runs as the prototype, and the gate's tables are identical at 67,000 runs |
 | 2026-11-24 | The author's answers to the five risks and on the start, quoted in the SPEC's table. Built into the gate as round 4 and into this document (sections 1, 9, 9a, 10, 11) and `FRAME-start.md`. Measured: 67,000 runs, careful 41.4 ±1.6%, careless 0.3 ±0.2% |
 | 2026-11-23 | Design proposal written; four nations; the war frame accepted. "Go with recommendations and suggestions. Expand nations to 4 total, 2 near and 2 a bit further". Measured: kill gate round 3, 30,000 runs, careful 30.2 ±1.5%, careless 1.7 ±0.4% |
 | 2026-11-23 | Politics, a named cast and war into the gate. "Go with recommendations, also outline how military actions and play out will work along the other systems of trade and diplomacy". Measured: round 2, 29,000 runs |
 | 2026-11-22 | Scaffolded (shape C, the story engine); kill gate round 1, 20,000 runs: two claims failed |
+
+## 16. As built: Phase 1, the port (2026-11-28)
+
+Where this section differs from the plan above it, this section wins.
+
+**What exists.**
+
+| Path | What |
+|---|---|
+| `content/colony/numbers.yaml` | Every number of the colony's rules: 230 numbers and tables, all tuned, none sourced. Fractions written "1/14" and read exactly |
+| `src/game/colony/schema.ts`, `numbers.ts` | The Zod schema, strict (a misspelt or missing number fails the build); the validated table `N` |
+| `src/game/colony/rng.ts` | Named streams (the prototype's mulberry32, unchanged), not the story engine's sfc32 cursor: a stream is rebuilt from (seed, turn, system), so the save holds only the seed and a draw added to one system never shifts another |
+| `src/game/colony/types.ts` | The state (plain data, saved whole), the summer and winter plans, the view |
+| `src/game/colony/derive.ts` | Every number a screen shows and the turn resolves with: `defenceOf`, `strengthOf`, `forceOf`, `homeOf`, `allyMarchOf`, `reckonedHome`, `knowOf`, `tieGood`, `standingOf`, and `view()` |
+| `src/game/colony/turn.ts` | `newColony`, `step`, `play`: the half-year in the written order of section 5 |
+| `src/game/colony/save.ts` | Versioned save (format `colony-of-adalia/colony`, version 1), a migration chain (empty), `tests/fixtures/colony-v1.json` |
+| `sim/policies.ts` | The reference governors (careful, careless, and every part the gate swaps) |
+| `sim/gate.ts`, `sim/check.ts`, `sim/trace.ts` | `npm run gate`, `npm run gate:check` (in `npm run check`), `npm run trace` |
+| `tools/build-colony.ts`, `tools/colony-fingerprint.ts`, `tools/make-colony-fixture.ts` | YAML to JSON; the fingerprint; the save fixture |
+| `tests/colony.test.ts` | The numbers match the YAML; the fingerprint holds; the view and the fight share one derivation; the site moves only the near nations; every save fixture loads and plays on; a newer or foreign save is refused |
+
+**How it was proved.** Exactly, not within error:
+- the port and the prototype gave the same end state, compared as sorted-key
+  JSON field by field, in **5,000 of 5,000 runs** (25 kinds of life x 200
+  seeds, the first comparison run);
+- `npm run gate` on the port printed **the prototype's round 4b tables to the
+  last digit** (67 arms x 1,000 seeds = 67,000 runs; `diff` empty);
+- a fingerprint (a hash of the end states of 25 arms x 30 seeds) is committed
+  and tested, so the proof outlives the prototype, now retired
+  (`prototypes/killgate/README.md`);
+- `sim/check.ts` adds what the prototype never checked: 20 lives saved to JSON
+  text and reloaded before every turn (951 reloads) play exactly as lives never
+  saved.
+
+The only differences between the two models were bookkeeping: four
+statistics the prototype created lazily, two fields it never read (`letter`,
+`cargoHome`), and seven numbers nothing read (listed at the head of
+`numbers.yaml`), all dropped or given a starting value in the port.
+
+**Not in Phase 1, by the plan.** The colony is not yet joined to the story
+engine: `src/game/module.ts` and the browser still play the kit's placeholder
+story, and no screen shows a colony. That join is Phase 2 (the desks, and
+`director.ts`, which turns a turn's record into scenes). The game-measure batch
+runner (`run.js` with an adapter) is not installed; `sim/gate.ts` does its work
+for now.
+
+**Measured (round 4b, unchanged by the port):** careful governor 49.3 ±1.6%
+(company, random landing), 47.4 ±1.6% (Crown); careless 0.3 ±0.2%; by site
+55.9 / 45.5 / 25.8%. `docs/KILLGATE.md` has the rest.

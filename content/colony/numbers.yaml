@@ -1,0 +1,304 @@
+# Every tunable number of the colony's rules (src/game/colony/). Read by
+# src/game/colony/numbers.ts, validated by its Zod schema, and compiled into
+# src/game/colony/numbers.json by `npm run content`.
+#
+# ALL OF IT IS TUNED, NONE OF IT IS SOURCED. The history (Jamestown, Quebec,
+# Plymouth) is from memory and unchecked (docs/SPEC.md). Measured: docs/KILLGATE.md.
+# Units: a turn is half a year; food is one person's ration for one turn;
+# powder is kegs; a fraction may be written "1/14".
+#
+# Ported 2026-11-28 from prototypes/killgate/data.js (kill gate round 4b). The
+# formulas the prototype wrote as functions are written here as their numbers;
+# formulas.ts holds the arithmetic, in the prototype's order so the port is exact.
+# Dropped in the port, because nothing read them: allyAbove, allyHelp, allyCorn
+# (replaced by the support rule), specPrice (replaced by price.spec), mutinyBelow
+# and mutiny (the one-number mutiny, replaced by the factions in round 4).
+
+life: 60            # turns the governor may hold office before he lays it down
+after: 20           # turns the colony must stand without him: the win is ten years
+firstTen: 20        # the first-playable window, and the "first ten years" the author named
+minPop: 12          # below this the colony is dead
+
+start: { lab: 34, craft: 6, sold: 10, gent: 12, fam: 0, food: 150, powder: 22, iron: 10, salt: 8, goods: 14, morale: 60, favour: 55 }
+
+# ---- work: per hand set to a job for a summer -------------------------------------------
+foodPerHand: 3.4                     # times the fields, the land known, the weather, the tools
+fieldMult: { base: 1, perLevel: 0.09 }   # fields 0..10: at 0 the year's food takes two hands in three
+fieldCost: { base: 8, perLevel: 3 }      # build points for the next level of fields
+storeCost: 22
+storeMax: 3
+millCost: 170                        # the powder mill: late, dear, and it ends the clock
+millCraft: 6
+millKegs: 5
+wallPerHand: 0.085
+wallDecay: 0.06
+wallMax: 10
+cargoPerHand: 1.6
+rangePerHand: 0.05                   # the country ranged, 0..1: better furs, better hunting, a truer reckoning
+ironUsePerHand: 0.035                # tools wear; short of iron, every job slows
+ironShortPenalty: 0.45
+spoil: 0.28
+spoilSalted: 0.06
+saltPerFood: 0.035
+storeSpoilCut: 0.2
+harassPenalty: 0.35                  # field and cargo work lost under a hostile nation, with no watch
+
+# ---- winter ---------------------------------------------------------------------------
+huntFoodPerKeg: 5
+huntKegsPerHead: 1/14
+shortRation: 0.72
+shortRationDeath: 0.02
+starveDeathShare: 0.75
+summerDeathShare: 0.4                # summer hunger kills fewer: there is fish and forage
+powderDamp: 0.04                     # kegs spoiled per turn, share of stock
+
+# ---- ships ----------------------------------------------------------------------------
+fate:                                # real ships; the perfect-ships world sets every one to 0
+  company: { late: 0.16, short: 0.12, lost: 0.07 }
+  crown: { late: 0.34, short: 0.10, lost: 0.07 }
+budget:                              # the backers' purse a year: base + perFavour x favour
+  company: { base: 22, perFavour: 0.4 }
+  crown: { base: 24, perFavour: 0.16 }
+sails:                               # the chance the backers send a ship: min(cap, base + perFavour x favour)
+  company: { base: 0.55, perFavour: 0.0045, cap: 0.97 }
+  crown: { base: 0.72, perFavour: 0.002, cap: 1 }
+pushSettlers:                        # labourers sent unasked, the later waves: from year, base + perYear x year
+  company: { fromYear: 4, base: 3, perYear: 0.3 }
+  crown: null
+price:
+  company: { spec: 4, powder: 2.0, iron: 1.0, salt: 0.5, goods: 0.6, food: 0.35, lab: 1.0, craft: 2.2, sold: 3.0, fam: 1.5 }
+  crown: { spec: 4, powder: 1.1, iron: 1.0, salt: 0.5, goods: 0.9, food: 0.35, lab: 1.7, craft: 2.6, sold: 1.3, fam: 2.2 }
+standard:                            # what the backers load when no letter reached them, as shares of the purse
+  company: { lab: 0.45, goods: 0.15, food: 0.15, powder: 0.10, iron: 0.08, salt: 0.07 }
+  crown: { sold: 0.35, powder: 0.25, food: 0.15, lab: 0.12, iron: 0.08, salt: 0.05 }
+crownVictuals: 3                     # rations a Crown ship carries for each soldier already there: the King feeds his men
+craftFound: 0.6                      # "ask for carpenters and you get what the backers could find"
+gentPerShip: { company: 0.12, crown: 0.05 }   # gentlemen who come unasked, share of the settlers sent
+seasoning: 0.10                      # newcomers dead in their first season
+graveyard: 3                         # settlers who will not sail: share lost per share of the colony that died last year
+graveyardMax: 0.8
+
+# ---- the backers ----------------------------------------------------------------------
+patienceYears: 8                     # expectations and verdict rise as (year + 1) / 8 to full in year seven
+companyWants: { perHead: 0.35, growth: 0.03 }   # cargo a year: perHead x people x (1 + growth x year) x patience
+companySwing: 16
+companyNoShip: -4
+crownCargoWeight: 0.3
+courtSd: 4
+courtDrift: 0.5
+flagBonus: 3
+recallBelow: 12
+recallStrikes: 2
+
+# ---- the nations ----------------------------------------------------------------------
+# Ids, not names: the canon sheet names them. Two on the doorstep, two a few days inland.
+nations:
+  - { id: n1, near: true, pop: 330, base: [-45, 35], corn: 1.18 }
+  - { id: n2, near: true, pop: 250, base: [-45, 35], corn: 1.15 }
+  - { id: f1, near: false, pop: 420, base: [-45, 35], corn: 1.12 }
+  - { id: f2, near: false, pop: 300, base: [-45, 35], corn: 1.10 }
+warriorShare: 0.25
+tradeTie: 3
+tradeAbove: -10
+giftTie: 6
+giftCost: 5
+furPerGood: 1.5
+cornPrice: 0.8
+cornSold: 0.25
+powderTie: 3
+powderFood: 8
+rivalSpite: 2
+raidTie: -50
+raidGrudge: 30
+raidKegs: 3
+raidShare: 0.4
+raidMax: 70
+grudgeDecay: 0.01
+drift: 0.12
+landFree: 70
+landPerDeal: 16
+landCost: 9
+landPressure: 0.2
+warBelow: -30
+attackBase: 0.10
+attackSlope: 0.01
+attackMax: 0.6
+wallDef: 3
+armedDef: 1.2
+unarmedDef: 0.15
+settlerArms: 0.1
+kegsPerAttack: 1/12
+gunEdge: 1/40
+commit: [0.6, 1.2]                   # how much of its strength a nation sends: more as the tie worsens
+breachPop: 0.35
+breachFood: 0.3
+far: { attack: 0.5, land: 0.3, furs: 1.5, scout: 1.5 }   # what being a few days inland changes
+nearLand: 0.6
+parleyGoods: 8
+parleyBase: 0.3
+parleyBeaten: 0.35
+parleyInterpreter: 0.15
+parleyTo: 5
+truceTurns: 6
+beatenTurns: 4
+scoutErr: 0.5                        # how wrong the reckoning of a town can be with the country unranged
+watchDeaths: 3
+fightCools: 8
+suesBelow: 0.5                       # a nation at half its people on landing will not fight another
+feudCares: 40                        # above this two nations are enemies
+feud: [10, 90]
+feudSd: 7
+fightAbove: 55
+fightChance: 0.5
+fightLoss: 0.04
+sideCost: 1.0
+friendshipPrice: 1/40                # goods a head a year below which trade wins no tie
+pactAbove: 30
+pactBreaks: 5
+pactHelp: 0.5
+allyMarch: 0.5
+pactCorn: 0.6
+pactTarget: 1.5
+busyDiv: 140
+callKegs: 3
+callRivalTie: -20
+callRivalGrudge: 8
+callTie: 6
+callPlunder: 30
+refuseCall: -20
+raidRivalTie: 8
+hegemon: 1.6
+tribute: 4
+tributeRefused: -8
+
+# ---- the watch and the field -----------------------------------------------------------
+watchCover: 0.08
+drillRate: 1.6
+drillDecay: 0.1
+drillArms: 0.3
+expeditionKegs: 5
+homeEdge: 0.35                       # an expedition falls on one town: a third of the nation's strength
+carried: 1.1
+standOff: 0.8
+carriedPop: 0.06
+carriedCorn: 30
+carriedGrudge: 12
+routShare: 0.2
+expeditionFavour: { company: -3, crown: 3 }
+
+# ---- the named few ----------------------------------------------------------------------
+roles: { surgeon: 0.75, smith: 0.7, carpenter: 1.25, captain: 1.15, interpreter: 1, minister: 2, husbandman: 1.1, factor: 1.15 }
+namedRisk: 1.0
+namedMorale: 3
+specFound: 0.5
+
+# ---- sickness, both ways ---------------------------------------------------------------
+shipFever: 0.30
+shipFeverDeath: [0.03, 0.08]
+crossOver: 0.5
+crossOverNoContact: 0.2
+nationFeverDeath: [0.05, 0.11]
+tradeFever: 0.15
+colonyFeverDeath: [0.04, 0.10]
+nurseCut: 0.5
+nurseHands: 0.10
+nurseTie: 15
+nurseGrudge: -5
+refuseTie: -10
+refuseGrudge: 8
+healerTie: 5
+healerAbove: 10
+
+# ---- the colony's temper ----------------------------------------------------------------
+moraleRest: 55
+moralePull: 0.08
+desertBelow: 35
+desert: 0.03
+abandonBelow: 25
+deathMorale: 60
+m: { ship: 8, noShip: -8, short: -7, starve: -15, breach: -12, repulse: 4, press: -2, attend: 5, fever: -4 }
+
+# ---- round 4: the author's answers of 2026-11-24 ---------------------------------------
+know0: 0.35                          # the land not known: the harvest starts at 35% ...
+knowYear: 0.065                      # ... learned by the years ...
+knowRange: 0.25                      # ... and by ranging
+newRoute: 1.6                        # a new route: losses and short ships at 2.6x in year one ...
+routeYears: 10                       # ... falling to the settled rate by year ten
+abandonDied: 1.5                     # the next ship after a starving year may take them home ...
+hardYear: 0.2                        # ... past a fifth of the colony dead in the year ...
+homeBy: 12                           # ... and not after year twelve
+sites:                               # where the ship puts in: the two near nations' temper on landing
+  sheltered: [[0, 35], [0, 35]]
+  contested: [[-50, -20], [-10, 35]]
+  palisade: [[-60, -30], [-60, -30]] # the Jamestown shore
+inciteGoods: 5
+inciteKegs: 2
+inciteHeat: 22
+inciteAbove: -75
+inciteFound: 0.18
+inciteFoundTie: -25
+inciteFoundGrudge: 10
+inciteUsed: -6
+mediateGoods: 6
+mediateCool: 20
+mediateTie: 4
+busyFight: 0.3
+engagedTurns: 3
+bloodyRepulse: 1.5
+repulseLoss: 0.07
+respect: 3
+beatenHeat: 0.4
+repulseFavour: { crown: 3, company: 0 }
+owedMarch: 1.0
+clientKegs: 1
+clientHeat: 12
+clientMarch: 0.8
+clientLoss: 0.05
+clientResent: 2.5
+clientWarriorGrudge: 4
+takeLand: 18
+tieFurs: 0.5
+tieParley: 0.3
+tieIncite: 1.0
+tieLand: 0.5
+supportAbove: 25
+supportCorn: 0.25
+supportHelp: 0.2
+factions: [gent, lab, sold, fam]
+griev:
+  decay: 0.12
+  base: 15
+  gent: { press: 9, noProfit: 3, idle: 2, granted: -25 }
+  lab: { hunger: 10, short: 4, deaths: 60, overwork: 4, landless: 4, granted: -25 }
+  sold: { noPowder: 10, killed: 50, unpaid: 3, repulse: -8, granted: -25 }
+  fam: { fever: 6, breach: 14, deaths: 40, minister: -3, granted: -25 }
+heard: 18
+heardAll: 5
+demandAt: 50
+demandEvery: 4
+refused: 12
+concede:
+  gent: { goods: 6, land: 6 }
+  lab: { land: 10 }
+  sold: { goods: 5, powder: 2 }
+  fam: { goods: 4 }
+mutinyAt: 70
+mutinyWeight: 0.15
+mutinyChance: 0.35
+backgrounds:
+  none: {}
+  oldHouse: { favour: 20, budget: 0.9 }           # standing, little money: the court listens
+  merchant: { favour: -5, budget: 1.2 }           # credit, no name
+  soldier: { favour: -10, sold: 8, drill: 0.5 }   # the men follow you, the backers do not
+  disgrace: { favour: -15, goods: 8 }             # sent here to be forgotten: the hard start
+
+# ---- the governor ----------------------------------------------------------------------
+hazard: { base: 0.002, perTurn: 0.0005 }   # chance of death a turn (rolled once a year, doubled)
+hazardHunger: 0.012
+healthCut: 0.5
+deputyStep: 0.07
+deputyDies: 0.02
+deputyHeir: 0.35
+successionFavour: 15
+successionMorale: 10
+successorBest: 0.8

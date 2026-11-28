@@ -37,6 +37,7 @@
     "tools",
     "tests",
     "vite.config.ts",
-    "packages"
+    "packages",
+    "sim"
   ]
 }

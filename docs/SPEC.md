@@ -1,10 +1,10 @@
-# The Adalian colony (no title yet): one-page spec
+# Colony of Adalia: one-page spec
 
 Status: **approved to go to its kill gate, 2026-11-22.** Stage 1 of the
 `game-building` workflow is done; the author answered the open questions (see
-Decisions). The kill gate has had four rounds: `docs/KILLGATE.md`. Round 4 built
-in the author's answers of 2026-11-24; claim 4 fails again, on a fault in the bot's rule. The design proposal is `docs/DESIGN.md`, waiting for
-the author. Where the Decisions table below differs from the text above it (four
+Decisions). The kill gate has had four rounds and a fix: `docs/KILLGATE.md`.
+`docs/DESIGN.md` is approved (2026-11-28) and Phase 1, the port of the kill gate
+into the game, is built. Where the Decisions table below differs from the text above it (four
 nations, not two or three), the table wins. Nothing below this line
 has been changed since the author approved it, except the note under
 "Assumptions and risks" on House of Adalia.
@@ -238,13 +238,14 @@ This page is the whole brief; the chat it came from is gone. In order:
 
 ## Open for the author
 
-1. A title.
+1. ~~A title.~~ *Colony of Adalia* (2026-11-28).
 2. The new world's canon sheet: its nations, names and coast.
 
 ## Decisions
 
 | Date | Decision |
 |---|---|
+| 2026-11-28 | **The title, the design, and the start.** Shown round 4, `DESIGN.md` and `FRAME-start.md`. The author: "Go ahead with your recommendations. Colony of Adalia keeps it tied to the trilogy". Read here as: the title is *Colony of Adalia*, the third of the Adalian games after *Knight of Adalia* and *House of Adalia*; `DESIGN.md` is approved and Phase 1 starts; the recommendations stand: a cargo floor in the careful rule before judging the jobs (fault A, done: round 4b), difficulty set by the landing site rather than a global number (fault B), and `FRAME-start.md`'s four questions answered as recommended (the house named on the first page, offered from the founder's name; the six forced choices as written; an extinct house's code starts a cousin's line at the disgraced start; the random site kept as a fourth choice). |
 | 2026-11-24 | **The author's answers to the five risks, and the start.** Shown round 3 and `DESIGN.md`. The author: "1. the first 10 years should be the most crucial and just reliant on ships. 2.a visible choice, a good way to control difficulty. Also, Make it possible to play the hostile nations off each other. Diplomacy should be very deep and versatile, since war could be near catastrophe given the limited resources. That's not to say don't make it useful, because some players would love to replay Jamestown or others and fight off the natives who swarm the palisade. 3. Allies should be useful pawns if handled right, like most colonizers viewed them. Treating them as equals could be good to, but it won't likely lead to you being top dog 4. Ties should buy easier trade, diplomacy, and support 5. Morale and internal factions should be real threats, but not to the point of micromanagement Knight of Adalia codes should allow play for those who didn't play house of adalia, but some rapid fire choices should be forced before the game starts to simulate houses story. If prefer if you came in with an HoA save code." Read here as: the first ten years are where most colonies fail, and they fail on the ships; the landing site is chosen openly as the difficulty; an envoy can set nations on each other; a Crown fortress can hold a hostile shore; two kinds of pact, client and equal; a tie pays in trade, diplomacy and support; four factions with grievances and one lever a winter; a House of Adalia code (`HOA1.`) is the preferred start, and a Knight of Adalia code is followed by forced quick choices for House of Adalia's story. Measured in `KILLGATE.md` round 4; designed in `FRAME-war.md` section 8, `FRAME-start.md` and `DESIGN.md`. The DESIGN is still for approval. |
 | 2026-11-23 | **Four nations, and start the design.** Shown round 2 and the war frame. The author: "Go with recommendations and suggestions. Expand nations to 4 total, 2 near and 2 a bit further". Read here as: (1) four nations, two near and two further off, replacing "two or three" above and the first playable's "two nations"; (2) start `docs/DESIGN.md` with the open faults carried as named risks (the recommendation); (3) the war frame's rule and its proposed fixes are accepted to be built and measured (the suggestions): no separate army, three beats to a fight, parley, a town's strength hidden until the country is ranged, a captain whose temper can override an order. Round 3 of the gate measured the numbers side. |
 | 2026-11-23 | **Round 2 of the kill gate, and war.** Shown round 1 and four questions, with the recommendation to answer the neighbours (politics between the nations) and hunger (a small named cast) first. The author: "Go with recommendations, also outline how military actions and play out will work along the other systems of trade and diplomacy". Read here as: build both into the gate now; the late ship and the hostile start stay open. Done in `docs/KILLGATE.md` round 2 and `docs/FRAME-war.md`. The nations' feud and the sixth job (the watch) are proposals in that frame, not yet approved. |

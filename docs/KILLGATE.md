@@ -1,10 +1,11 @@
 # Kill gate: results
 
-**Where the build is (2026-11-24):** Stage 2 of the game-building workflow,
-round 4: the author's answers to the five risks are built into the model and
-measured. `docs/DESIGN.md` (Stage 3) is updated to match and still waits for
-the author's yes. The repo is scaffolded (Stage 4's instruments exist, with the
-kit's placeholder story in them). No screen is drawn and no scene is written.
+**Where the build is (2026-11-28):** the gate is closed at round 4b and its
+model is now the game's own rules. `docs/DESIGN.md` is approved and Phase 1 is
+built: the prototype was ported to `src/game/colony/`, proved to play the same
+(5,000 of 5,000 runs; the tables below identical at 67,000 runs), and retired.
+`npm run gate` now measures the game, not a model of it, and prints the round
+4b tables. No screen is drawn and no scene is written; Phase 2 is next.
 
 The kill gate is a numbers-only model of one governor's colony: ships on a new
 route, a land not yet known, hands, food, powder, four nations and their
@@ -12,9 +13,48 @@ feuds, the envoy, war, two kinds of pact, sickness, four factions, eight named
 settlers, the backers, the governor's death and the ten years after it. No
 names of places or peoples, no prose, no UI.
 
-Round 4 is the current model and the current verdict; `npm run gate`
-reproduces it exactly (run twice, byte-identical). Rounds 3, 2 and 1 are kept
+Round 4b is the current verdict; `npm run gate` reproduces it exactly from the
+game's own rules. Rounds 3, 2 and 1 are kept
 below as the record, and their tables are from the model as it was then.
+
+## Round 4b (2026-11-28): the cargo floor; the current numbers
+
+The author, shown round 4: "Go ahead with your recommendations." The
+recommendation for fault A was a floor on cargo in the careful rule, measured
+before blaming the jobs. Done: the company's governor keeps a tenth of his
+hands on the backers' cargo every year, whatever else is short. The Crown's
+keeps none, because its backers barely weigh cargo (with a tenth, the Crown won
+31.5% against 44.5% without, 400 seeds).
+
+67 arms × 1,000 seeds, the same seeds as round 4. Everything below in round 4
+that this changes is listed here; the rest of round 4 stands as written.
+
+| | Round 4 | Round 4b |
+|---|---|---|
+| Careful, company | 41.4 ±1.6% (recalled 9%) | **49.3 ±1.6%** (recalled 1%) |
+| Careful, Crown | 47.4 ±1.6% | 47.4 ±1.6% (unchanged: no floor) |
+| Claim 4: a fixed 60% on food | beat the careful rule, 46.2% against 41.4% | **loses to it,** 46.2% against 49.3%. Still the best *fixed* split on 58% of seeds, and best of all on 45% of seeds against the careful rule's 32% |
+| Claim 1, perfect ships, at ten years | +12.6 ±1.6 | **+15.9 ±1.5**; 51.9 ±2.2% of careful losses inside the first ten years |
+| Sites, careful | 53.2 / 35.3 / 14.2 | **55.9 / 45.5 / 25.8** (sheltered / contested / palisade) |
+| Palisade, play them off | 36.2 | 40.5 (+14.7 ±1.8 over careful) |
+| Equal pact / client pact | 47.7 / 36.8 | 57.1 / 48.1 (client -9.0 ±1.6; holds 211 land against 160; near nations 329 against 412) |
+| Factions ignored | 7.4% win, 64.6% mutiny | 9.7% win, 64.1% mutiny; careful 6.3% |
+| Starts, company | merchant's heir best, 47.7 | old house 54.8, merchant's heir 54.1 |
+
+**Fault A is closed** as far as the bot goes: the careful rule beats every
+fixed split. Food-first remains the best thing to do without thinking, which
+is acceptable for a game about a starving first decade.
+
+**Fault B (the win is easy) is closed by the author's own control.** With a
+random landing the careful governor wins 49.3%; by site 55.9% sheltered, 45.5%
+contested, 25.8% on the palisade. The SPEC's "about one in three" lies between
+the contested river and the palisade shore. Difficulty is the site the player
+chooses (the author, 2026-11-24: "a visible choice, a good way to control
+difficulty"), so no global number is tuned down.
+
+Faults C (the gentlemen never rise), D (granting a demand is worth little:
++1.5 ±0.5 now) and E (the soldier's start is weak except under the Crown on the
+palisade) stand.
 
 ## Round 4 (2026-11-24): the author's answers, measured
 

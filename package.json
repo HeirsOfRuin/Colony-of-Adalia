@@ -4,7 +4,7 @@
   "type": "module",
   "description": "A governor's life on a new shore, and the wait for the next ship.",
   "scripts": {
-    "content": "tsx tools/build-content.ts",
+    "content": "tsx tools/build-content.ts && tsx tools/build-colony.ts",
     "dev": "npm run content && vite",
     "build": "npm run content && tsc --noEmit && vite build && node tools/stamp.mjs dist",
     "preview": "vite preview",
@@ -22,9 +22,10 @@
     "audit": "tsx tools/narrative/audit-choices.ts",
     "transcript": "tsx tools/transcript.ts",
     "fixture": "tsx tools/make-fixture.ts",
-    "gate": "node prototypes/killgate/gate.js 1000",
-    "gate:check": "node prototypes/killgate/check.js",
-    "trace": "node prototypes/killgate/trace.js"
+    "gate": "tsx sim/gate.ts 1000",
+    "gate:check": "tsx sim/check.ts",
+    "trace": "tsx sim/trace.ts",
+    "fingerprint": "tsx tools/colony-fingerprint.ts"
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.10.6",

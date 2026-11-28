@@ -1,9 +1,10 @@
 # Frame: the start (codes, the house's story, background, landing site)
 
-Status: **for the author, 2026-11-24. Not approved, nothing built.** The
-numbers side of backgrounds and sites is measured in `KILLGATE.md` round 4;
-the code reading below is designed from House of Adalia's source and has not
-been run against a real code.
+Status: **approved on the recommendations, 2026-11-28.** The author: "Go
+ahead with your recommendations." Not built: it lands in Phase 5 (`DESIGN.md`
+section 13). The numbers side of backgrounds and sites is measured in
+`KILLGATE.md` rounds 4 and 4b; the code reading below is designed from House of
+Adalia's source and has not been run against a real code.
 
 ## The request
 
@@ -62,7 +63,7 @@ What is read, and what it becomes:
 
 | From the code | Becomes |
 |---|---|
-| `ended.ending` (or, for a save made while playing on, the ending worked out from its flags as House of Adalia's `endings.ts` does) | The house's **standing**, the largest single bonus: `royal_line` and `power` high; `old_house` good; `fallen_house` and `foreign_house` low; `name_struck` the disgraced start; `extinct` refused with a plain message (no heir, no descendant) |
+| `ended.ending` (or, for a save made while playing on, the ending worked out from its flags as House of Adalia's `endings.ts` does) | The house's **standing**, the largest single bonus: `royal_line` and `power` high; `old_house` good; `fallen_house` and `foreign_house` low; `name_struck` the disgraced start; `extinct` a cousin's line at the disgraced start (the house is gone; a collateral branch carries its name and its enemies) |
 | `characters[hero]`: the last head's traits, station, renown | One trait carried to the governor; renown into standing |
 | `res.coin`, `debt`, `brancale`, `holdings` | **Credit**: the purse the letter spends. Debt to the Lanzi bank is still owed, to the Lanzi's heirs: a hostile investor |
 | `houses` (rival houses' temper; an enemy at -6 or below) | **Enemies at home**: each enemy house is an investor against you, or a voice at court against you if the colony is the Crown's |
@@ -149,13 +150,15 @@ is that a House of Adalia code's best ending is worth about one and a half
 times the best background, and its worst ending (`name_struck`) is the
 disgraced start exactly. That needs a model arm per ending before it is built.
 
-## Still for the author
+## Decided (2026-11-28, on the recommendations)
 
-1. **The house's name.** House of Adalia has none to read. Name it on the first
-   page, offered from the founder's name?
-2. **Six forced choices** for a Knight of Adalia code. Too many, too few, or
-   the wrong six?
-3. **The extinct ending.** A House of Adalia code that ended with the house
-   extinct cannot have a descendant. Refuse it, or allow a cousin's line at
-   the disgraced start?
-4. **The random site.** Keep it as a fourth choice?
+1. **The house's name** is given on the first page, offered from the founder's
+   name (House of Adalia records none).
+2. **Six forced choices** for a Knight of Adalia code, as written above.
+3. **An extinct house's code** starts a cousin's line at the disgraced start,
+   so every code from House of Adalia can be played.
+4. **The random site** ("where the ship is driven") is kept as a fourth choice.
+5. **Difficulty is the site** (the author, 2026-11-24). With a random landing the
+   careful governor wins 49.3%; sheltered 55.9%, contested 45.5%, palisade 25.8%
+   (round 4b, 1,000 seeds each). The SPEC's "about one in three" lies between
+   the contested river and the palisade shore; no global number is tuned down.
